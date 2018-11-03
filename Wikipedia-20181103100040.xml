@@ -41,155 +41,6 @@
     </namespaces>
   </siteinfo>
   <page>
-    <title>Category:Beekeeping</title>
-    <ns>14</ns>
-    <id>1399146</id>
-    <revision>
-      <id>713986514</id>
-      <parentid>688745809</parentid>
-      <timestamp>2016-04-06T23:37:56Z</timestamp>
-      <contributor>
-        <username>M. A. Broussard</username>
-        <id>27286888</id>
-      </contributor>
-      <comment>Removed Apis (genus) category, as it is a category for taxonomy only.</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="185">{{Cat main|Beekeeping}}
-{{Commons cat|Beekeeping}}
-
-[[Category:Domesticated animals]]
-[[Category:Agriculture by type]]
-[[Category:Bees]]
-[[Category:Hobbies]]
-[[Category:Insect rearing]]</text>
-      <sha1>rahy6bc3516qopbd2jfh0s5pg7cnra2</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Livestock</title>
-    <ns>14</ns>
-    <id>917009</id>
-    <revision>
-      <id>801553589</id>
-      <parentid>781067345</parentid>
-      <timestamp>2017-09-20T11:19:26Z</timestamp>
-      <contributor>
-        <username>Shyamsunder</username>
-        <id>800815</id>
-      </contributor>
-      <comment>added [[Category:Primary industries]] using [[WP:HC|HotCat]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="450">{{Commons cat|Livestock}}
-The category is for various topics of raising '''[[livestock]]''', i.e.,  [[domesticated]] [[animal]]s, that may be kept or raised in pens, houses, pastures, or farms as part of an agricultural or farming operation, whether for commerce or private use. 
-
-See also [[:Category:Veterinary medicine]]
-
-[[Category:Agriculture by type]]
-[[Category:Domesticated animals]]
-[[Category:Rural culture]]
-[[Category:Primary industries]]</text>
-      <sha1>9d0a8auo0vq3dqnw6jq4oidaz5h6gq2</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Military animals</title>
-    <ns>14</ns>
-    <id>2220759</id>
-    <revision>
-      <id>758296698</id>
-      <parentid>731249879</parentid>
-      <timestamp>2017-01-04T16:30:22Z</timestamp>
-      <contributor>
-        <username>Fixuture</username>
-        <id>19796795</id>
-      </contributor>
-      <comment>added [[Category:Biological warfare]] using [[WP:HC|HotCat]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="178">{{Main article}}
-{{Commons cat|Military animals}}
-
-[[Category:Military technology]]
-[[Category:Domesticated animals]]
-[[Category:Working animals]]
-[[Category:Biological warfare]]</text>
-      <sha1>kzv2nx44v2jg5ocs2gulwuxjkw3t124</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Animal equipment</title>
-    <ns>14</ns>
-    <id>4699536</id>
-    <revision>
-      <id>673880155</id>
-      <parentid>546914354</parentid>
-      <timestamp>2015-07-31T03:37:31Z</timestamp>
-      <contributor>
-        <username>AvicBot</username>
-        <id>11952314</id>
-      </contributor>
-      <minor/>
-      <comment>Bot: Changing commonscat link from [[:Commons:Category:Animal equipment|Animal equipment]] to [[:Commons:Category:Animal-related equipment|Animal-related equipment]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="168">&lt;!-- lacking better category name --&gt;
-{{Commons category|Animal-related equipment|Animal equipment}}
-
-[[Category:Equipment]]
-[[Category:Domesticated animals|Equipment]]</text>
-      <sha1>b13ml58vj57myozuqomn6l8k2thhboz</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Domesticated birds</title>
-    <ns>14</ns>
-    <id>4622900</id>
-    <revision>
-      <id>848803553</id>
-      <parentid>547410511</parentid>
-      <timestamp>2018-07-04T12:25:27Z</timestamp>
-      <contributor>
-        <username>Wi24rd</username>
-        <id>19674663</id>
-      </contributor>
-      <comment>added [[Category:Bird breeds]] using [[WP:HC|HotCat]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="243">{{Cat main|Domestication|List of domesticated animals}}
-{{Commons cat|Domesticated birds}}
-[[Image:Ducks and poultry.jpg|thumb|right|Domesticated ducks]]
-
-[[Category:Domesticated animals|Birds]]
-[[Category:Aviculture]]
-[[Category:Bird breeds]]</text>
-      <sha1>th47sie4jeafc2srdi81md9gbteugqf</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Animal and pet magazines</title>
-    <ns>14</ns>
-    <id>2321473</id>
-    <revision>
-      <id>547385748</id>
-      <parentid>520485483</parentid>
-      <timestamp>2013-03-28T04:41:12Z</timestamp>
-      <contributor>
-        <username>Addbot</username>
-        <id>6569922</id>
-      </contributor>
-      <minor/>
-      <comment>[[User:Addbot|Bot:]] Migrating 2 interwiki links, now provided by [[Wikipedia:Wikidata|Wikidata]] on [[d:q8253320]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="105">[[Category:Magazines by content]]
-[[Category:Pets|Magazines]]
-[[Category:Domesticated animals|Magazines]]</text>
-      <sha1>n2huf29fmoozp2trubqfcggpbm5l19g</sha1>
-    </revision>
-  </page>
-  <page>
     <title>Fancy pigeon</title>
     <ns>0</ns>
     <id>1578728</id>
@@ -634,29 +485,6 @@ The most comprehensive case for human self-domestication has been proposed for t
 
 [[Category:Domesticated animals]]</text>
       <sha1>gu0n33mzkxoke481kpirv6zr9dwir67</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Feral animals</title>
-    <ns>14</ns>
-    <id>19032416</id>
-    <revision>
-      <id>547653235</id>
-      <parentid>420149895</parentid>
-      <timestamp>2013-03-29T17:34:52Z</timestamp>
-      <contributor>
-        <username>Addbot</username>
-        <id>6569922</id>
-      </contributor>
-      <minor/>
-      <comment>[[User:Addbot|Bot:]] Migrating 1 interwiki links, now provided by [[Wikipedia:Wikidata|Wikidata]] on [[d:q8446595]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="141">{{Commons cat|Feral animals}}
-See also [[:Category:Feral children]], [[:Category:Invasive animal species]]
-
-[[Category:Domesticated animals]]</text>
-      <sha1>i0wdda5y8voq70qzl9p6bb9ovpo1oba</sha1>
     </revision>
   </page>
   <page>
@@ -2067,27 +1895,6 @@ Hairless breeds of guinea pigs have been used in scientific research since the 1
 [[sv:Blandrashund]]
 [[zh:混血兒]]</text>
       <sha1>nijmyrfyxqxudxdr61z7oi6lzul1ywj</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Ferrets</title>
-    <ns>14</ns>
-    <id>14107944</id>
-    <revision>
-      <id>729223180</id>
-      <parentid>595496165</parentid>
-      <timestamp>2016-07-10T19:40:22Z</timestamp>
-      <contributor>
-        <username>مصعب</username>
-        <id>20297394</id>
-      </contributor>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="127">{{Main article}}
-[[Category:Animals bred for albinism on a large scale]]
-[[Category:Domesticated animals]]
-[[Category:Weasels]]</text>
-      <sha1>446rt0i5d044qxzlkz2jvdizonkm8o7</sha1>
     </revision>
   </page>
   <page>
@@ -6027,33 +5834,6 @@ Please read WP:EL#Links_to_normally_avoid and don't even bother inserting forum 
     </revision>
   </page>
   <page>
-    <title>Category:Landraces</title>
-    <ns>14</ns>
-    <id>39112626</id>
-    <revision>
-      <id>763030235</id>
-      <parentid>657447074</parentid>
-      <timestamp>2017-01-31T23:52:50Z</timestamp>
-      <contributor>
-        <username>Jaguar</username>
-        <id>9913007</id>
-      </contributor>
-      <minor/>
-      <comment>/* top */add portals using [[Project:AWB|AWB]]</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="641">{{portal|Biology}}
-A '''[[landrace]]''' (sometimes "'''landrace breed''') is a local variety of a domesticated animal or plant species which has developed largely by natural processes from wild species, by adaptation to the natural and cultural environment in which it lives, as distinct from a standardized [[breed]]. A plant landrace may be referred to as a "'''traditional variety'''"; an animal landrace may also be called be a "'''natural breed'''" or "'''traditional breed'''".
-
-[[Category:Biology terminology]]
-[[Category:Breeds]]
-[[Category:Domesticated plants]]
-[[Category:Domesticated animals]]
-[[Category:Rare breed conservation]]</text>
-      <sha1>0tf32ruxviep054z89s16wy0dyd5e4i</sha1>
-    </revision>
-  </page>
-  <page>
     <title>Chicken</title>
     <ns>0</ns>
     <id>37402</id>
@@ -7016,28 +6796,6 @@ White ferrets were favored in the Middle Ages for the ease in seeing them in thi
     </revision>
   </page>
   <page>
-    <title>Category:Domestic pigs</title>
-    <ns>14</ns>
-    <id>14224832</id>
-    <revision>
-      <id>833671673</id>
-      <parentid>660181311</parentid>
-      <timestamp>2018-04-01T21:56:15Z</timestamp>
-      <contributor>
-        <username>JarBot</username>
-        <id>27077959</id>
-      </contributor>
-      <minor/>
-      <comment>Bot:add Commons category</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="99">{{Commons category|Sus scrofa domesticus}}
-[[Category:Pigs]]
-[[Category:Domesticated animals|Pigs]]</text>
-      <sha1>8v5lj3obqsmkusf5stsargqhr41r2ny</sha1>
-    </revision>
-  </page>
-  <page>
     <title>Taurine cattle</title>
     <ns>0</ns>
     <id>39840182</id>
@@ -7093,62 +6851,6 @@ The [[Bovine genome|genome sequence]] of the [[Hereford cattle|Hereford breed]] 
 [[Category:Domesticated animals]]
 [[Category:Cattle]]</text>
       <sha1>1qkxlg7v61a5ogadfuwryfio7k2di28</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Sericulture</title>
-    <ns>14</ns>
-    <id>46710097</id>
-    <revision>
-      <id>818169077</id>
-      <parentid>777889435</parentid>
-      <timestamp>2018-01-02T00:32:05Z</timestamp>
-      <contributor>
-        <username>Allforrous</username>
-        <id>12120664</id>
-      </contributor>
-      <comment>Commons and AP templates.</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="294">{{Commons}}
-{{AP}}
-
-*'''[[Sericulture]]''' or silk farming —  the cultivation of [[silkworm]]s to produce [[silk]] in the {{C|Silk production|silk production process}}.
-
-[[Category:Silk production]]
-[[Category:Insects in culture]]
-[[Category:Insect rearing]]
-[[Category:Domesticated animals]]</text>
-      <sha1>jczqm98qkdwaepjr6ijt4ilujn8o2rp</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Dogs</title>
-    <ns>14</ns>
-    <id>704389</id>
-    <revision>
-      <id>740551592</id>
-      <parentid>697065850</parentid>
-      <timestamp>2016-09-21T19:45:12Z</timestamp>
-      <contributor>
-        <username>Look2See1</username>
-        <id>11406674</id>
-      </contributor>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="385">{{Cat main|Dog}}
-{{portal|Dogs}}
-{{Commons cat|Dogs}}
-
-This [[Wikipedia:Category|category]] collects information about the domestic [[dog]]. For wild dogs and other relatives of the dog, please move up to [[:Category:Canines]].
-
-*Lists of relatives of the domestic dog: [[Canis]], [[Canidae]]
-
-
-[[Category:Domesticated animals]]
-[[Category:Pets]]
-[[Category:Subspecies of Canis lupus]]</text>
-      <sha1>sdzwo1bo5jct7cm6gfe1qr185ahifgy</sha1>
     </revision>
   </page>
   <page>
@@ -7612,28 +7314,6 @@ Domestic animal breeds commonly differ from country to country, and from nation 
 [[Category:Breeding| ]]
 [[Category:Zoological nomenclature]]</text>
       <sha1>rb8on3wwu2bqglkv7ihls2pmmrm2gzf</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Breeds</title>
-    <ns>14</ns>
-    <id>13622311</id>
-    <revision>
-      <id>740551492</id>
-      <parentid>740550573</parentid>
-      <timestamp>2016-09-21T19:44:20Z</timestamp>
-      <contributor>
-        <username>Look2See1</username>
-        <id>11406674</id>
-      </contributor>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="101">{{Commons cat|Breeds}}
-{{catmain|Breed}}
-
-[[Category:Breeding| ]]
-[[Category:Domesticated animals|*]]</text>
-      <sha1>ahs5is0mkh6817y5l749ezo1grccg3a</sha1>
     </revision>
   </page>
   <page>
@@ -8462,25 +8142,6 @@ Indian scientists from the [[National Dairy Research Institute]], [[Karnal]] dev
 [[Category:Fauna naturalised in Australia]]
 [[Category:Pack animals]]</text>
       <sha1>41x2g7o1zbjln8nk9nq7mdht0m4o2rz</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Identification of domesticated animals</title>
-    <ns>14</ns>
-    <id>52196571</id>
-    <revision>
-      <id>747948548</id>
-      <timestamp>2016-11-05T11:16:46Z</timestamp>
-      <contributor>
-        <username>Caftaric</username>
-        <id>25152539</id>
-      </contributor>
-      <comment>stub</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="89">[[Category:Animal identification|Domesticated animals]]
-[[Category:Domesticated animals]]</text>
-      <sha1>p2gqg1wycjxeqnoqx4vb3yr2rphqyz4</sha1>
     </revision>
   </page>
   <page>
@@ -9452,28 +9113,6 @@ Rabbit show jumping, a form of [[Animals in sport|animal sport]] between rabbits
 [[Category:Vertebrate animal models]]
 [[Category:Edible invasive species]]</text>
       <sha1>gchf2wjktm5hwlw4sy4mrsn759b0vdz</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Lists of domesticated animals</title>
-    <ns>14</ns>
-    <id>11674383</id>
-    <revision>
-      <id>779256424</id>
-      <parentid>544829659</parentid>
-      <timestamp>2017-05-07T22:09:11Z</timestamp>
-      <contributor>
-        <username>Look2See1</username>
-        <id>11406674</id>
-      </contributor>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="223">*'''{{C|Lists of animals|Lists}}''' of '''{{C|Domesticated animals|domesticated animals}}'''.
-
-[[Category:Domesticated animals|.L]]
-[[Category:Lists of animals|D]]
-[[Category:Agriculture-related lists|domesticated animals]]</text>
-      <sha1>k8481f2hh54txgatntvkc5habnsa2kr</sha1>
     </revision>
   </page>
   <page>
@@ -13992,27 +13631,6 @@ In 2003, the [[International Commission on Zoological Nomenclature]] [[Opinion 2
     </revision>
   </page>
   <page>
-    <title>Category:Crossbreeds</title>
-    <ns>14</ns>
-    <id>55956696</id>
-    <revision>
-      <id>813378698</id>
-      <timestamp>2017-12-03T10:39:54Z</timestamp>
-      <contributor>
-        <username>SMcCandlish</username>
-        <id>378390</id>
-      </contributor>
-      <comment>creating cat.</comment>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="126">{{Catmain|Crossbreed}}
-
-[[Category:Domesticated animals]]
-[[Category:Breeds]]&lt;!--Because some people will look for it here.--&gt;</text>
-      <sha1>h4dbgapyxzslx9ti72jkho1ppgzgvzn</sha1>
-    </revision>
-  </page>
-  <page>
     <title>Gayal</title>
     <ns>0</ns>
     <id>886528</id>
@@ -16603,39 +16221,6 @@ In the 1996 [[point-and-click adventure game]] ''[[Phantasmagoria: A Puzzle of F
 
 [[Category:Rats as pets]]</text>
       <sha1>mvl83ixcwpthmsy854w5qfx28xtnn5m</sha1>
-    </revision>
-  </page>
-  <page>
-    <title>Category:Pets</title>
-    <ns>14</ns>
-    <id>737815</id>
-    <revision>
-      <id>852971973</id>
-      <parentid>852971716</parentid>
-      <timestamp>2018-08-01T15:46:24Z</timestamp>
-      <contributor>
-        <username>Dimadick</username>
-        <id>24198</id>
-      </contributor>
-      <model>wikitext</model>
-      <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="580">{{Commons cat|Pets}}
-*'''[[Pet]]s'''. or '''companion animals''' — {{C|Domesticated animals|domesticated animals}} kept by humans for companionship, beauty of appearance/utterances, and/or personal entertainment.
-
-
-
-{{-}}
-:{{Catmain|Pet}}
-:::{{For|economically productive animals|Category: Domesticated animals}}
-:::{{For|animals in commercial/public entertainment|Category: Animals in entertainment}}
-
-[[Category:Animals and humans]]
-[[Category:Animals in entertainment]]
-[[Category:Domesticated animals]]
-[[Category:Hobbies]]
-[[Category:Personal life]]
-[[Category:Recreation]]</text>
-      <sha1>jx4bqr1dim7c8awnqnfwain41yh7x04</sha1>
     </revision>
   </page>
   <page>

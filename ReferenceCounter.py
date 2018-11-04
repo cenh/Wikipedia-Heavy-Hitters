@@ -29,6 +29,11 @@ class WebReference(Reference):
         self.format = None
 
 
+class JournalReference(Reference):
+    def __init__(self):
+        pass
+
+
 class ReferencePageItem():
     def __init__(self, ref, count):
         self.reference = ref
@@ -92,11 +97,26 @@ class RefParser():
                 ref.isbn = value
         return ref
 
+    def parseJournalRef(self, text):
+        ref = JournalReference()
+        attributes = text.split('|')
+        for attribute in attributes:
+            pair = attribute.strip().split('=')
+            if(len(pair)) < 2:
+                continue
+            key = attribute.split('=')[0].lower().strip()
+            value = attribute.split('=')[1].strip()
+
+            self.parseGeneralRef(ref, key, value)
+        return ref
+
     def parseRefFromText(self, text):
         if("cite web" in text):
             return self.parseWebRef(text)
         if("cite book" in text):
             return self.parseBookRef(text)
+        if("cite journal" in text):
+            return self.parseJournalRef(text)
 
     def cleanText(self, text):
         return text.replace("}}", "").strip()
@@ -122,9 +142,11 @@ class RefParser():
 if __name__ == "__main__":
     input_file = "Wikipedia-20181103100040.xml"
     wiki_reader = WikiReader(input_file)
-    refParser = RefParser()
+    refParsers = list()
     for page_dict in wiki_reader:
         refs = Parser.getRefs(page_dict['revision']['text'])
+        refParser = RefParser()
+        refParsers.append(refParser)
         for ref in refs:
             refParser.parseRef(ref.attrs.get('name'), ref.next)
     pass

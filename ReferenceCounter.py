@@ -1,8 +1,9 @@
 from WikiReader import WikiReader
-from collections import defaultdict
+from collections import defaultdict, Counter
 from enum import Enum
 from Parser import Parser
 import bs4
+from CountMinSketch import CountMinSketch
 
 
 class Reference():
@@ -42,8 +43,8 @@ class ReferencePageItem():
 
 class RefParser():
     def __init__(self):
-        self._refDict = defaultdict()
-        self._refList = list()
+        self.refDict = defaultdict()
+        self.refList = list()
 
     def parseGeneralRef(self, ref, key, value):
         if(key == 'title'):
@@ -126,17 +127,17 @@ class RefParser():
             return
 
         text = self.cleanText(text)
-        if name in self._refDict:
-            self._refDict[name].referenceCount += 1
+        if name in self.refDict:
+            self.refDict[name].referenceCount += 1
         elif(name):
             ref = self.parseRefFromText(text)
             if(ref):
                 refItem = ReferencePageItem(ref, 1)
-                self._refDict[name] = refItem
+                self.refDict[name] = refItem
         else:
             ref = self.parseRefFromText(text)
             if(ref):
-                self._refList.append(ref)
+                self.refList.append(ref)
 
 
 if __name__ == "__main__":
@@ -149,4 +150,29 @@ if __name__ == "__main__":
         refParsers.append(refParser)
         for ref in refs:
             refParser.parseRef(ref.attrs.get('name'), ref.next)
-    pass
+
+    countMinSketch = CountMinSketch(10, 1/(20), 0.01)
+
+    countDict = Counter()
+    for refParsed in refParsers:
+        for refKey in refParsed.refDict.keys():
+            ref = refParsed.refDict[refKey].reference
+            if(type(ref) is BookReference and ref.isbn):
+                isbn = ref.isbn.replace("-", "")
+                for i in range(refParsed.refDict[refKey].referenceCount):
+                    countMinSketch.increment(isbn)
+                    countDict[isbn] += 1
+        for ref in refParsed.refList:
+            if(type(ref) is BookReference and ref.isbn):
+                isbn = ref.isbn.replace("-", "")
+                countMinSketch.increment(isbn)
+                countDict[isbn] += 1
+
+    error = 0
+    errorCount = 0
+    for isbn in countDict.keys():
+        occurrences = countDict[isbn]
+        estimate = countMinSketch.count(isbn)
+        error = abs(occurrences-estimate)
+        errorCount += 1
+    print("error: {}".format(error/errorCount))

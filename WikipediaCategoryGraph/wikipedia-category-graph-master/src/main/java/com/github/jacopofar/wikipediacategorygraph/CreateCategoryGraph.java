@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2014 Jacopo farina.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ public class CreateCategoryGraph {
     public final static DynamicRelationshipType inCategoryRel = DynamicRelationshipType.withName("IN_CATEGORY");
     public final static DynamicRelationshipType subCategoryOfRel = DynamicRelationshipType.withName("SUBCATEGORY_OF");
     public static void main(String args[]) throws FileNotFoundException, IOException{
-        
+
         if(args.length!=3){
             System.err.println("wrong usage, expecting 3 arguments: category.sql categorylinks.sql graphfolder");
         }
@@ -57,11 +57,11 @@ public class CreateCategoryGraph {
         String categoryLinksFile=args[1];
         String dbFolder=args[2];
         System.out.println("Initializing the database...");
-        
+
         GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbFolder);
-        
+
         //there are two kinds of nodes: labels and categories
-        
+
         if(false){
             try ( Transaction tx = graphDb.beginTx()){
                 for(Node n:graphDb.findNodesByLabelAndProperty(categoryLbl, "name", "Materialism")){
@@ -88,7 +88,7 @@ public class CreateCategoryGraph {
                 //pick the lines containing inserts, not comments or DDL
                 if(!line.startsWith("INSERT INTO ") || line.length()<2)
                     return;
-                
+
                 try ( Transaction tx = graphDb.beginTx()){
                     //split values in single inserts, in the form
                     //(2,'Unprintworthy_redirects',1102027,15,0)
@@ -102,7 +102,7 @@ public class CreateCategoryGraph {
                                 int ID=Integer.parseInt(category.replaceAll(",'.+", ""));
                                 if(isInternalCategory(name))
                                     return;
-                                
+
                                 Node cat = graphDb.createNode(categoryLbl);
                                 cat.setProperty("name", name);
                                 cat.setProperty("ID", ID);
@@ -115,7 +115,7 @@ public class CreateCategoryGraph {
             });
             System.out.println("Loaded "+done.get()+" categories in "+(System.currentTimeMillis()-lastTime)/1000 +" seconds");
         }
-        
+
         System.out.println("waiting up to 2 minutes for the names and ID indexes to be online...");
         try (Transaction tx=graphDb.beginTx()){
             Schema schema = graphDb.schema();
@@ -123,9 +123,9 @@ public class CreateCategoryGraph {
         }
         done.set(0);
         final AtomicInteger doneCats=new AtomicInteger(0);
-        
+
         lastTime=System.currentTimeMillis();
-        
+
         System.out.println("Loading the subcategory edges");
         try(BufferedReader br = new BufferedReader(new FileReader(categoryLinksFile))){
             final ConcurrentHashMap <Integer,Long>articleNodes=new ConcurrentHashMap<>(5000);
@@ -133,7 +133,7 @@ public class CreateCategoryGraph {
                 //pick the lines containing inserts, not comments or DDL
                 if(!line.startsWith("INSERT INTO ") || line.length()<2)
                     return;
-                
+
                 try ( Transaction tx = graphDb.beginTx()){
                     //split values in single inserts, in the form
                     //(cl_from,cl_to,sortkey,...)
@@ -141,7 +141,7 @@ public class CreateCategoryGraph {
                     //the second is the name of the containing category
                     //and the third is the uppercase normalized name of the article or category
                     Arrays.stream(line.split("'\\),\\((?=[0-9])"))
-                            
+
                             .filter(v->!v.startsWith("INSERT INTO"))
                             .forEach(edge->{
                                 if(edge.endsWith("','file")){
@@ -150,13 +150,13 @@ public class CreateCategoryGraph {
                                 int ID=Integer.parseInt(edge.split(",")[0]);
                                 String catname=edge.replaceAll("[0-9]+,'", "").replaceAll("',.+", "");
                                 ResourceIterator<Node> matches = graphDb.findNodesByLabelAndProperty(categoryLbl, "name", catname).iterator();
-                                
+
                                 if(!matches.hasNext()){
                                     matches.close();
                                     return;
                                 }
                                 //System.out.println(edge);
-                                
+
                                 Node container = matches.next();
                                 matches.close();
                                 if(edge.endsWith("'subcat")){
@@ -167,24 +167,24 @@ public class CreateCategoryGraph {
                                         return;
                                     }
                                     doneCats.incrementAndGet();
-                                    
+
                                     matches.next().createRelationshipTo(container, subCategoryOfRel);
                                     matches.close();
                                     if(done.incrementAndGet()%100000==0)
-                                        System.out.println(" - parsed "+done.get()+" edges ("doneCats.get()+" categories so far)");
+                                        System.out.println(" - parsed "+done.get()+" edges ("+doneCats.get()+" categories so far)");
                                     return;
                                 }
                                 if(done.incrementAndGet()%100000==0)
-                                        System.out.println(" - parsed "+done.get()+" edges ("doneCats.get()+" categories so far)");
+                                        System.out.println(" - parsed "+done.get()+" edges ("+doneCats.get()+" categories so far)");
                             });
                     tx.success();
                 }
             });
         }
-        System.out.println("Loaded "+done.get()+" edges (doneCats.get()+" categories) in "+(System.currentTimeMillis()-lastTime)/1000 +" seconds");
+        System.out.println("Loaded "+done.get()+" edges ("+doneCats.get()+" categories) in "+(System.currentTimeMillis()-lastTime)/1000 +" seconds");
         graphDb.shutdown();
     }
-    
+
     private static boolean isInternalCategory(String name) {
         if(name.startsWith("Wikipedia_articles_")) return true;
         if(name.startsWith("Suspected_Wikipedia_sockpuppets")) return true;

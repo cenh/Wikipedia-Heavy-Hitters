@@ -35,7 +35,7 @@ public class WholeProcess {
             categoryLinksFile=argc[1];
             dbFolder=argc[2];
         }
-		String MainTopicClassifications = "Arts|Culture|Education|Events|Geography|Health|History|Humanities|Language|Law|Life|Mathematics|Nature|People|Philosophy|Politics|Reference|Religion|Science and technology|Society|Sports|Universe|World";
+	String MainTopicClassifications = "Arts|Culture|Education|Events|Geography|Health|History|Humanities|Language|Law|Life|Mathematics|Nature|People|Philosophy|Politics|Reference|Religion|Science_and_technology|Society|Sports|Universe|World";
         CreateCategoryGraph.main(new String[]{categoryFile, categoryLinksFile, dbFolder});
         CalculateCategoryDistances.main(new String[]{dbFolder, MainTopicClassifications});
     }

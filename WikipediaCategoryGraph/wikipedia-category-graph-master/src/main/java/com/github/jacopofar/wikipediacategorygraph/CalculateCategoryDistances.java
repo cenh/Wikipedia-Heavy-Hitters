@@ -43,6 +43,7 @@ public class CalculateCategoryDistances {
                 DistanceLabel dl = new DistanceLabel(cat,categoryName,0);
                 dl.mark();
                 frontier.add(dl);
+                System.out.println("Found the following macro-category and created it's label: " + categoryName);
                 matcher.close();
             }
             tx.success();

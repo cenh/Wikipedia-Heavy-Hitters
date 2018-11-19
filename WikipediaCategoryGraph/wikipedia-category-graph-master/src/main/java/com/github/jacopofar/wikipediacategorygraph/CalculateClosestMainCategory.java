@@ -53,7 +53,7 @@ public class CalculateClosestMainCategory {
 								if (closestNode == null || closestNode.getLeft() == null
 										|| closestNode.getMiddle() == null
 										|| closestNode.getRight() == Integer.MAX_VALUE) {
-									if (notMappedCategories.get() % 100 == 0) {
+									if (notMappedCategories.get() > 100 && notMappedCategories.get() % 100 == 0) {
 										System.out.println(
 												" - was not able to map " + done.get() + " categories so far)");
 									}

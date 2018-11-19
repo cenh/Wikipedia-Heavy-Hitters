@@ -28,6 +28,7 @@ public class CalculateClosestMainCategory {
 		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbFolder);
 		//
 		final AtomicInteger done = new AtomicInteger(0);
+		final AtomicInteger notMappedCategories = new AtomicInteger(0);
 
 		List<String> mainCategories = Arrays.asList(args[2].split("\\|"));
 
@@ -52,6 +53,10 @@ public class CalculateClosestMainCategory {
 								if (closestNode == null || closestNode.getLeft() == null
 										|| closestNode.getMiddle() == null
 										|| closestNode.getRight() == Integer.MAX_VALUE) {
+									if (notMappedCategories.get() % 100 == 0) {
+										System.out.println(
+												" - was not able to map " + done.get() + " categories so far)");
+									}
 									return;
 								}
 								//
@@ -59,9 +64,11 @@ public class CalculateClosestMainCategory {
 										closestNode.getLeft(), closestNode.getMiddle(), closestNode.getRight()));
 								//
 								try {
+									System.out.println("Writing to file..");
 									writer.append(closestNode.getLeft() + " -> " + closestNode.getMiddle() + " : "
 											+ closestNode.getRight());
 									writer.newLine();
+									writer.flush();
 								} catch (IOException e) {
 									System.err.println("Unable to write to file");
 									e.printStackTrace();
@@ -70,12 +77,6 @@ public class CalculateClosestMainCategory {
 								if (done.get() % 100 == 0) {
 									System.out.println(
 											" - calculated distances for " + done.get() + " categories so far)");
-									try {
-										writer.flush();
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
 								}
 							});
 				});

@@ -38,12 +38,12 @@ public class CalculateCategoryDistances {
         //initialize the frontier with the starting categories
         try ( Transaction tx = graphDb.beginTx()){
             for(String categoryName:args[1].split("\\|")){
+                System.out.println("Looking at the following macro-category: " + categoryName);
                 ResourceIterator<Node> matcher = graphDb.findNodesByLabelAndProperty(categoryLbl, "name", categoryName).iterator();
                 Node cat=matcher.next();
                 DistanceLabel dl = new DistanceLabel(cat,categoryName,0);
                 dl.mark();
                 frontier.add(dl);
-                System.out.println("Found the following macro-category and created it's label: " + categoryName);
                 matcher.close();
             }
             tx.success();

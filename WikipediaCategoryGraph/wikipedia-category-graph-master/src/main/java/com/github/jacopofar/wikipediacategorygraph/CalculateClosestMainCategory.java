@@ -42,6 +42,7 @@ public class CalculateClosestMainCategory {
 
 					Arrays.stream(line.split("[0-9]\\),\\((?=[0-9])")).filter(v -> !v.startsWith("INSERT INTO"))
 							.forEach(category -> {
+								done.getAndIncrement();
 								String name = category.replaceAll(".+[0-9],'", "").replaceAll("',[0-9]+.+", "");
 								if (isInternalCategory(name))
 									return;
@@ -66,9 +67,16 @@ public class CalculateClosestMainCategory {
 									e.printStackTrace();
 								}
 
-								if (done.incrementAndGet() % 1000 == 0)
+								if (done.get() % 100 == 0) {
 									System.out.println(
 											" - calculated distances for " + done.get() + " categories so far)");
+									try {
+										writer.flush();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
 							});
 				});
 			}

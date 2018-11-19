@@ -53,8 +53,12 @@ public class ShortestPathCalculator {
 
 			Path path = finder.findSinglePath(startNode, endNode);
 			String pathStr = "";
-			for (Node node : path.reverseNodes()) {
-				pathStr += node.getProperty("name") + " -> ";
+			if (path != null) {
+				for (Node node : path.reverseNodes()) {
+					pathStr += node.getProperty("name") + " -> ";
+				}
+			} else {
+				pathStr = endNode.getProperty("name").toString();
 			}
 			return Triple.of(startNode.getProperty("name").toString(), pathStr,
 					path != null ? path.length() : Integer.MAX_VALUE);

@@ -52,7 +52,11 @@ public class ShortestPathCalculator {
 					.iterator().next();
 
 			Path path = finder.findSinglePath(startNode, endNode);
-			return Triple.of(startNode.getProperty("name").toString(), endNode.getProperty("name").toString(),
+			String pathStr = "";
+			for (Node node : path.reverseNodes()) {
+				pathStr += node.getProperty("name") + " -> ";
+			}
+			return Triple.of(startNode.getProperty("name").toString(), pathStr,
 					path != null ? path.length() : Integer.MAX_VALUE);
 		} catch (Exception e) {
 			e.printStackTrace();

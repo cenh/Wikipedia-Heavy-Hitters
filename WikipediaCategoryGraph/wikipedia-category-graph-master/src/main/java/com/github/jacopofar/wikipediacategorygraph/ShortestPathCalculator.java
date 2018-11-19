@@ -16,7 +16,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 public class ShortestPathCalculator {
 
 	public static void main(String[] args) {
-		String dbFolder = args[0];
+		String dbFolder = "DummyGraph";
 		System.out.println("Initializing the database...");
 		//
 		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbFolder);
@@ -54,7 +54,7 @@ public class ShortestPathCalculator {
 			Path path = finder.findSinglePath(startNode, endNode);
 			String pathStr = "";
 			if (path != null) {
-				for (Node node : path.reverseNodes()) {
+				for (Node node : path.nodes()) {
 					pathStr += node.getProperty("name") + " -> ";
 				}
 			} else {

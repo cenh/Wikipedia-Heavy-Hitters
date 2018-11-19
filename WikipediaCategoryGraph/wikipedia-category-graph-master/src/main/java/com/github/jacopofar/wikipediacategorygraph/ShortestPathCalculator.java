@@ -32,7 +32,7 @@ public class ShortestPathCalculator {
 
 		for (String endNode : endNodes) {
 			Triple<String, String, Integer> pairDistance = getShortestPath(graphDb, startingNode, endNode);
-			if (pairDistance.getRight() < closestPair.getRight()) {
+			if (pairDistance.getRight() <= closestPair.getRight()) {
 				closestPair = pairDistance;
 			}
 		}

@@ -48,6 +48,8 @@ public class CalculateClosestMainCategory {
 								//
 								Triple<String, String, Integer> closestNode = ShortestPathCalculator
 										.getClosestNode(graphDb, name, mainCategories);
+								System.out.println(String.format("Starting node |%s| and end node |%s| distance: |%d|",
+										closestNode.getLeft(), closestNode.getMiddle(), closestNode.getRight()));
 								if (closestNode == null || closestNode.getLeft() == null
 										|| closestNode.getMiddle() == null) {
 									return;
@@ -62,7 +64,7 @@ public class CalculateClosestMainCategory {
 									e.printStackTrace();
 								}
 
-								if (done.incrementAndGet() % 100000 == 0)
+								if (done.incrementAndGet() % 1000 == 0)
 									System.out.println(
 											" - calculated distances for " + done.get() + " categories so far)");
 							});

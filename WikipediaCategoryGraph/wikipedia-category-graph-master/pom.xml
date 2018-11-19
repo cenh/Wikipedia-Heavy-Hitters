@@ -59,7 +59,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>utilizzatore.NatuBot</mainClass>
+                            <mainClass>com.github.jacopofar.wikipediacategorygraph.CalculateClosestMainCategory</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

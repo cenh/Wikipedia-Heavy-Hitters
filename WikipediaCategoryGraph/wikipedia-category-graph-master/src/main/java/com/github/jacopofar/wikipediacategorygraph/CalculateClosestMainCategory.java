@@ -19,8 +19,8 @@ public class CalculateClosestMainCategory {
 		if (args.length < 4) {
 			System.err.println(
 					"Provide 4 arguments: db_folder, category_sql_file_path, main_categories(one string separated by |), outputfile_path");
+			return;
 		}
-		System.out.println("Loading the categories and their IDs...");
 		//
 		String dbFolder = args[0];
 		System.out.println("Initializing the database...");

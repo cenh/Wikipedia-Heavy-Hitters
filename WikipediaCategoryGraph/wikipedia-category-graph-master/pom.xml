@@ -94,16 +94,5 @@
 		    <artifactId>commons-lang3</artifactId>
 		    <version>3.8.1</version>
 		</dependency>
-		<dependency>
-		    <groupId>org.neo4j.app</groupId>
-		    <artifactId>neo4j-server</artifactId>
-		    <version>2.1.5</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.neo4j.app</groupId>
-		    <artifactId>neo4j-server</artifactId>
-		    <version>2.1.5</version>
-		    <classifier>static-web</classifier>
-		</dependency>
     </dependencies>
 </project>

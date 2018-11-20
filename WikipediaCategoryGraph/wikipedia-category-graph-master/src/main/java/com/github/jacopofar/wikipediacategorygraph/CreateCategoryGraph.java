@@ -29,14 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.Transaction;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.DynamicRelationshipType;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.Schema;
 
 /**
@@ -61,13 +60,13 @@ public class CreateCategoryGraph {
 		String dbFolder = args[2];
 		System.out.println("Initializing the database...");
 
-		Driver driver = GraphDBCreator.getGraphDatabase("C:\\Users\\Alex\\Desktop\\testdb.db");
-		Session dbSession = driver.session();
+		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase("C:\\Users\\Alex\\Desktop\\testdb.db");
 
-		try (Transaction tx = dbSession.beginTransaction()) {
+		try (Transaction tx = graphDb.beginTx()) {
+			Schema schema = graphDb.schema();
 			// articles and categories have both a name and an ID
-//			schema.indexFor(categoryLbl).on("name").create();
-//			schema.indexFor(categoryLbl).on("ID").create();
+			schema.indexFor(categoryLbl).on("name").create();
+			schema.indexFor(categoryLbl).on("ID").create();
 			tx.success();
 		}
 		System.out.println("Loading the categories and their IDs...");
@@ -81,7 +80,7 @@ public class CreateCategoryGraph {
 				if (!line.startsWith("INSERT INTO ") || line.length() < 2)
 					return;
 
-				try (Transaction tx = dbSession.beginTransaction()) {
+				try (Transaction tx = graphDb.beginTx()) {
 					// split values in single inserts, in the form
 					// (2,'Unprintworthy_redirects',1102027,15,0)
 					// where the first values are the ID and the category name (the others the
@@ -97,7 +96,7 @@ public class CreateCategoryGraph {
 								if (isInternalCategory(name))
 									return;
 
-								Node cat = tx.createNode(categoryLbl);
+								Node cat = graphDb.createNode(categoryLbl);
 								cat.setProperty("name", name);
 								cat.setProperty("ID", ID);
 								// System.out.println(name+" --> "+ID);

@@ -11,7 +11,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 public class ShortestPathCalculator {
 
@@ -19,7 +18,7 @@ public class ShortestPathCalculator {
 		String dbFolder = "DummyGraph";
 		System.out.println("Initializing the database...");
 		//
-		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbFolder);
+		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase("C:\\Users\\Alex\\Desktop\\testdb.db");
 		//
 		Triple<String, String, Integer> result = getClosestNode(graphDb, "Computers",
 				Arrays.asList("Cats|History".split("\\|")));
@@ -45,11 +44,8 @@ public class ShortestPathCalculator {
 		try (Transaction tx = graphDb.beginTx()) {
 			PathFinder<Path> finder = GraphAlgoFactory
 					.shortestPath(PathExpanders.forType(DBSchemaProperties.subCategoryOfRel), 30000);
-			Node endNode = graphDb.findNodesByLabelAndProperty(DBSchemaProperties.categoryLbl, "name", endCategoryNode)
-					.iterator().next();
-			Node startNode = graphDb
-					.findNodesByLabelAndProperty(DBSchemaProperties.categoryLbl, "name", startingCategoryNode)
-					.iterator().next();
+			Node endNode = graphDb.findNodes(DBSchemaProperties.categoryLbl, "name", endCategoryNode).next();
+			Node startNode = graphDb.findNodes(DBSchemaProperties.categoryLbl, "name", startingCategoryNode).next();
 
 			Path path = finder.findSinglePath(startNode, endNode);
 			String pathStr = "";

@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 public class CalculateClosestMainCategory {
 	public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -25,7 +24,7 @@ public class CalculateClosestMainCategory {
 		String dbFolder = args[0];
 		System.out.println("Initializing the database...");
 		//
-		GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbFolder);
+		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase("C:\\Users\\Alex\\Desktop\\testdb.db");
 		//
 		final AtomicInteger done = new AtomicInteger(0);
 		final AtomicInteger notMappedCategories = new AtomicInteger(0);

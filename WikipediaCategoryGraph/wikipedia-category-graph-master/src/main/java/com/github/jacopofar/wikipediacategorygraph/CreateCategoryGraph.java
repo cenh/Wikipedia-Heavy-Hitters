@@ -60,7 +60,7 @@ public class CreateCategoryGraph {
 		String dbFolder = args[2];
 		System.out.println("Initializing the database...");
 
-		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase("C:\\Users\\Alex\\Desktop\\testdb.db");
+		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase(dbFolder);
 
 		try (Transaction tx = graphDb.beginTx()) {
 			Schema schema = graphDb.schema();

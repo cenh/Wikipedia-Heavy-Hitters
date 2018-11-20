@@ -18,25 +18,26 @@ package com.github.jacopofar.wikipediacategorygraph;
 import java.io.IOException;
 
 /**
- * Run the three steps of the process:
- * 1. load the category nodes (ID and name) from the category.sql file
- * 2. load edge data from categorylinks.sql and create article nodes
- * 3. calculate category distances from the given set of starting categories
+ * Run the three steps of the process: 1. load the category nodes (ID and name)
+ * from the category.sql file 2. load edge data from categorylinks.sql and
+ * create article nodes 3. calculate category distances from the given set of
+ * starting categories
  * 
- * The process is described in the paper "Automatically assigning Wikipedia articles to macro-categories"
+ * The process is described in the paper "Automatically assigning Wikipedia
+ * articles to macro-categories"
  */
 public class WholeProcess {
-    public static void main(String argc[]) throws IOException{
-        String categoryFile = "category.sql";
-        String categoryLinksFile = "categorylinks.sql";
-        String dbFolder = "categorygraph";
-        if(argc.length==3){
-            categoryFile=argc[0];
-            categoryLinksFile=argc[1];
-            dbFolder=argc[2];
-        }
-	String MainTopicClassifications = "Arts|Culture|Education|Events|Geography|Health|History|Humanities|Language|Law|Life|Mathematics|Nature|People|Philosophy|Politics|Reference|Religion|Science_and_technology|Society|Sports|Universe|World";
-        CreateCategoryGraph.main(new String[]{categoryFile, categoryLinksFile, dbFolder});
-        CalculateCategoryDistances.main(new String[]{dbFolder, MainTopicClassifications});
-    }
+	public static void main(String argc[]) throws IOException {
+		String categoryFile = "category.sql";
+		String categoryLinksFile = "categorylinks.sql";
+		String dbFolder = "categorygraph";
+		if (argc.length == 3) {
+			categoryFile = argc[0];
+			categoryLinksFile = argc[1];
+			dbFolder = argc[2];
+		}
+		String MainTopicClassifications = "Arts|Concepts|Culture|Education|Events|Geography|Health|History|Humanities|Language|Law|Life|Mathematics|Nature|People|Philosophy|Politics|Reference|Religion|Science|Society|Sports|Technology|Universe|World";
+		CreateCategoryGraph.main(new String[] { categoryFile, categoryLinksFile, dbFolder });
+		CalculateCategoryDistances.main(new String[] { dbFolder, MainTopicClassifications });
+	}
 }

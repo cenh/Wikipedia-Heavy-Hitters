@@ -21,13 +21,16 @@
 package com.github.jacopofar.wikipediacategorygraph;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.DynamicRelationshipType;
@@ -52,12 +55,14 @@ public class CreateCategoryGraph {
 
 	public static void main(String args[]) throws FileNotFoundException, IOException {
 
-		if (args.length != 3) {
-			System.err.println("wrong usage, expecting 3 arguments: category.sql categorylinks.sql graphfolder");
+		if (args.length != 4) {
+			System.err.println(
+					"wrong usage, expecting 4 arguments: category.sql categorylinks.sql graphfolder pagefile.sql");
 		}
 		String categoryFile = args[0];
 		String categoryLinksFile = args[1];
 		String dbFolder = args[2];
+		String pageFile = args[3];
 		System.out.println("Initializing the database...");
 
 		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase(dbFolder);
@@ -69,56 +74,24 @@ public class CreateCategoryGraph {
 			schema.indexFor(categoryLbl).on("ID").create();
 			tx.success();
 		}
-		System.out.println("Loading the categories and their IDs...");
-		long lastTime = System.currentTimeMillis();
-		final AtomicInteger done = new AtomicInteger(0);
-		// read the file line by line
-		try (BufferedReader br = new BufferedReader(new FileReader(categoryFile))) {
-			br.lines().parallel().forEach(line -> {
-				// while((line=br.readLine())!=null){
-				// pick the lines containing inserts, not comments or DDL
-				if (!line.startsWith("INSERT INTO ") || line.length() < 2)
-					return;
 
-				try (Transaction tx = graphDb.beginTx()) {
-					// split values in single inserts, in the form
-					// (2,'Unprintworthy_redirects',1102027,15,0)
-					// where the first values are the ID and the category name (the others the
-					// number of articles, subcategories and files)
-					// the awkward regular expressions matches the numbers between values so strange
-					// article titles do not break the splitting
-					// Arrays.stream(line.split("[0-9]\\),\\((?=[0-9])")).forEach(v->System.out.println("
-					// "+v));
-					Arrays.stream(line.split("[0-9]\\),\\((?=[0-9])")).filter(v -> !v.startsWith("INSERT INTO"))
-							.forEach(category -> {
-								String name = category.replaceAll(".+[0-9],'", "").replaceAll("',[0-9]+.+", "");
-								int ID = Integer.parseInt(category.replaceAll(",'.+", ""));
-								if (isInternalCategory(name))
-									return;
+		createCategoryNodes(categoryFile, graphDb);
+//		createIDCategoryNameFromPageLink(pageFile, "pageid_categoryname.txt", graphDb);
+//
+//		System.out.println("waiting up to 2 minutes for the names and ID indexes to be online...");
+//		try (Transaction tx = graphDb.beginTx()) {
+//			Schema schema = graphDb.schema();
+//			schema.awaitIndexesOnline(2, TimeUnit.MINUTES);
+//		}
+//		createRelationships(categoryLinksFile, "", graphDb);
+		graphDb.shutdown();
+	}
 
-								Node cat = graphDb.createNode(categoryLbl);
-								cat.setProperty("name", name);
-								cat.setProperty("ID", ID);
-								// System.out.println(name+" --> "+ID);
-								if (done.incrementAndGet() % 100000 == 0)
-									System.out.println(" - loaded " + done.get() + " categories");
-							});
-					tx.success();
-				}
-			});
-			System.out.println("Loaded " + done.get() + " categories in "
-					+ (System.currentTimeMillis() - lastTime) / 1000 + " seconds");
-		}
-
-		System.out.println("waiting up to 2 minutes for the names and ID indexes to be online...");
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			schema.awaitIndexesOnline(2, TimeUnit.MINUTES);
-		}
-		done.set(0);
+	private static void createRelationships(String categoryLinksFile, String pageidCategoryNameFile,
+			GraphDatabaseService graphDb) throws FileNotFoundException, IOException {
 		final AtomicInteger doneCats = new AtomicInteger(0);
 
-		lastTime = System.currentTimeMillis();
+		long lastTime = System.currentTimeMillis();
 
 		System.out.println("Loading the subcategory edges");
 		try (BufferedReader br = new BufferedReader(new FileReader(categoryLinksFile))) {
@@ -162,23 +135,112 @@ public class CreateCategoryGraph {
 
 									matches.next().createRelationshipTo(container, subCategoryOfRel);
 									matches.close();
-									if (done.incrementAndGet() % 100000 == 0)
-										System.out.println(" - parsed " + done.get() + " edges (" + doneCats.get()
-												+ " categories so far)");
+									if (doneCats.incrementAndGet() % 100000 == 0)
+										System.out.println(" - parsed " + doneCats.get() + " categories so far)");
 									return;
 								}
-								if (done.incrementAndGet() % 100000 == 0)
-									System.out.println(" - parsed " + done.get() + " edges (" + doneCats.get()
-											+ " categories so far)");
+								if (doneCats.incrementAndGet() % 100000 == 0)
+									System.out.println(" - parsed " + doneCats.get() + " categories so far");
 							});
 					tx.success();
 				}
 			});
 		}
-		System.out.println("Loaded " + done.get() + " edges (" + doneCats.get() + " categories) in "
+		System.out.println("Loaded " + doneCats.get() + " categories) in "
 				+ (System.currentTimeMillis() - lastTime) / 1000 + " seconds");
-		graphDb.shutdown();
 	}
+
+	private static void createCategoryNodes(String categoryFile, GraphDatabaseService graphDb)
+			throws FileNotFoundException, IOException {
+		System.out.println("Loading the categories and their IDs...");
+		long lastTime = System.currentTimeMillis();
+		final AtomicInteger done = new AtomicInteger(0);
+		// read the file line by line
+		try (BufferedReader br = new BufferedReader(new FileReader(categoryFile))) {
+			br.lines().parallel().forEach(line -> {
+				// while((line=br.readLine())!=null){
+				// pick the lines containing inserts, not comments or DDL
+				if (!line.startsWith("INSERT INTO ") || line.length() < 2)
+					return;
+
+				try (Transaction tx = graphDb.beginTx()) {
+					// split values in single inserts, in the form
+					// (2,'Unprintworthy_redirects',1102027,15,0)
+					// where the first values are the ID and the category name (the others the
+					// number of articles, subcategories and files)
+					// the awkward regular expressions matches the numbers between values so strange
+					// article titles do not break the splitting
+					// Arrays.stream(line.split("[0-9]\\),\\((?=[0-9])")).forEach(v->System.out.println("
+					// "+v));
+					Arrays.stream(line.split("[0-9]\\),\\((?=[0-9])")).filter(v -> !v.startsWith("INSERT INTO"))
+							.forEach(category -> {
+								String name = category.replaceAll(".+[0-9],'", "").replaceAll("',[0-9]+.+", "");
+								int ID = Integer.parseInt(category.replaceAll(",'.+", ""));
+								if (isInternalCategory(name))
+									return;
+
+								Node cat = graphDb.createNode(categoryLbl);
+								cat.setProperty("name", name);
+								cat.setProperty("ID", ID);
+								// System.out.println(name+" --> "+ID);
+								if (done.incrementAndGet() % 100000 == 0)
+									System.out.println(" - loaded " + done.get() + " categories");
+							});
+					tx.success();
+				}
+			});
+			System.out.println("Loaded " + done.get() + " categories in "
+					+ (System.currentTimeMillis() - lastTime) / 1000 + " seconds");
+		}
+	}
+
+	private static void createIDCategoryNameFromPageLink(String pageLinkFile, String outputFile,
+			GraphDatabaseService graphDb) throws FileNotFoundException, IOException {
+		Pattern pattern = Pattern.compile("\\(([^()]*)\\)");
+		// read the file line by line
+
+		final AtomicInteger analyzedPages = new AtomicInteger(0);
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, false))) {
+			try (BufferedReader br = new BufferedReader(new FileReader(pageLinkFile))) {
+				br.lines().forEach(line -> {
+					// while((line=br.readLine())!=null){
+					// pick the lines containing inserts, not comments or DDL
+					if (!line.startsWith("INSERT INTO ") || line.length() < 2)
+						return;
+
+					try (Transaction tx = graphDb.beginTx()) {
+						Matcher matcher = pattern.matcher(line);
+						while (matcher.find()) {
+							String page = matcher.group();
+							page = page.replace("(", "");
+							page = page.replace(")", "");
+							String name = page.split(",")[2];
+							int ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
+							ResourceIterator<Node> matches = graphDb.findNodes(categoryLbl, "name", name);
+							if (!matches.hasNext()) {
+								matches.close();
+								return;
+							}
+							try {
+								writer.write(ID + ": " + name);
+								writer.newLine();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							if (analyzedPages.incrementAndGet() % 100000 == 0)
+								System.out.println(" - parsed " + analyzedPages.get() + " pages so far)");
+						}
+						tx.success();
+					}
+				});
+			}
+		}
+	}
+
+//			System.out.println("Loaded " + done.get() + " categories in "
+//					+ (System.currentTimeMillis() - lastTime) / 1000 + " seconds");
 
 	private static boolean isInternalCategory(String name) {
 		if (name.startsWith("Wikipedia_articles_"))

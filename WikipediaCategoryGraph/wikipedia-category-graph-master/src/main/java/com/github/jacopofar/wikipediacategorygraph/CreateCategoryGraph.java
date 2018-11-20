@@ -27,6 +27,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -262,8 +264,19 @@ public class CreateCategoryGraph {
 		}
 	}
 
-//			System.out.println("Loaded " + done.get() + " categories in "
-//					+ (System.currentTimeMillis() - lastTime) / 1000 + " seconds");
+	private Map<String, String> buildPageDictionary(String file) throws IOException {
+        Map<String, String> dictionary = new HashMap<String, String>();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = null;
+        while ((line = br.readLine()) != null)
+        {
+            String[] ls = line.split(":");
+            String id = ls[0].replace(" ", "");
+            String name = ls[1].replace(" ", "");
+            dictionary.put(id, name);
+        }
+        return dictionary;
+    }
 
 	private static boolean isInternalCategory(String name) {
 		if (name.startsWith("Wikipedia_articles_"))

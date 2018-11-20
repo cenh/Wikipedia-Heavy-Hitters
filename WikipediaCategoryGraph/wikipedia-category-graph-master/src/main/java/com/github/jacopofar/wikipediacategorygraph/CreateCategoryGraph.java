@@ -27,8 +27,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -93,6 +91,7 @@ public class CreateCategoryGraph {
 		final AtomicInteger doneCats = new AtomicInteger(0);
 
 		long lastTime = System.currentTimeMillis();
+		ConcurrentHashMap<Integer, String> pageDictionary = buildPageDictionary(pageidCategoryNameFile);
 
 		System.out.println("Loading the subcategory edges");
 		try (BufferedReader br = new BufferedReader(new FileReader(categoryLinksFile))) {
@@ -127,7 +126,11 @@ public class CreateCategoryGraph {
 								matches.close();
 								if (edge.endsWith("'subcat")) {
 									// if the subcategory was stored, is already indexed
-									matches = graphDb.findNodes(categoryLbl, "ID", ID);
+									String endCategoryName = pageDictionary.get(ID);
+									if (endCategoryName == null) {
+										return;
+									}
+									matches = graphDb.findNodes(categoryLbl, "name", endCategoryName);
 									if (!matches.hasNext()) {
 										matches.close();
 										return;
@@ -198,6 +201,7 @@ public class CreateCategoryGraph {
 	private static void createIDCategoryNameFromPageLink(String pageLinkFile, String outputFile,
 			GraphDatabaseService graphDb) throws FileNotFoundException, IOException {
 		Pattern pattern = Pattern.compile("\\(([^()]*)\\)");
+		Pattern namePattern = Pattern.compile("([\"'])(\\\\?.)*?\\1");
 		// read the file line by line
 
 		final AtomicInteger analyzedPages = new AtomicInteger(0);
@@ -215,6 +219,7 @@ public class CreateCategoryGraph {
 						String page = null, name = null;
 						Integer ID = null;
 						Integer namespace = null;
+						Matcher nameMatcher = null;
 						while (matcher.find()) {
 							try {
 								analyzedPages.incrementAndGet();
@@ -222,8 +227,20 @@ public class CreateCategoryGraph {
 									System.out.println(" - analyzed " + analyzedPages.get() + " pages so far");
 								}
 								page = matcher.group();
-								page = page.replace("(", "").replace(")", "").replace("'", "");
-								name = page.split(",")[2];
+								page = page.replace("(", "").replace(")", "");
+								nameMatcher = namePattern.matcher(page);
+								if (nameMatcher.find()) {
+									name = nameMatcher.group();
+									name = name.replaceAll("^\'", "");
+									if (name.endsWith("'")) {
+										name = name.substring(0, name.length() - 1);
+									}
+								} else {
+									continue;
+								}
+								if (isInternalCategory(name)) {
+									continue;
+								}
 								ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
 								namespace = Integer.parseInt(page.split(",")[1].replaceAll(",'.+", ""));
 							} catch (Exception ex) {
@@ -264,19 +281,18 @@ public class CreateCategoryGraph {
 		}
 	}
 
-	private Map<String, String> buildPageDictionary(String file) throws IOException {
-        Map<String, String> dictionary = new HashMap<String, String>();
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = null;
-        while ((line = br.readLine()) != null)
-        {
-            String[] ls = line.split(":");
-            String id = ls[0].replace(" ", "");
-            String name = ls[1].replace(" ", "");
-            dictionary.put(id, name);
-        }
-        return dictionary;
-    }
+	private static ConcurrentHashMap<Integer, String> buildPageDictionary(String file) throws IOException {
+		ConcurrentHashMap<Integer, String> dictionary = new ConcurrentHashMap<Integer, String>();
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line = null;
+		while ((line = br.readLine()) != null) {
+			String[] ls = line.split(":");
+			Integer id = Integer.parseInt(ls[0].replace(" ", ""));
+			String name = ls[1].replace(" ", "");
+			dictionary.put(id, name);
+		}
+		return dictionary;
+	}
 
 	private static boolean isInternalCategory(String name) {
 		if (name.startsWith("Wikipedia_articles_"))

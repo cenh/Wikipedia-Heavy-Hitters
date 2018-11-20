@@ -39,7 +39,6 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.schema.Schema;
 
 /**
  * Creates a Neo4j graph representing the categories and page titles listed in
@@ -66,17 +65,17 @@ public class CreateCategoryGraph {
 		System.out.println("Initializing the database...");
 
 		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase(dbFolder);
+//
+//		try (Transaction tx = graphDb.beginTx()) {
+//			Schema schema = graphDb.schema();
+//			// articles and categories have both a name and an ID
+//			schema.indexFor(categoryLbl).on("name").create();
+//			schema.indexFor(categoryLbl).on("ID").create();
+//			tx.success();
+//		}
 
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			// articles and categories have both a name and an ID
-			schema.indexFor(categoryLbl).on("name").create();
-			schema.indexFor(categoryLbl).on("ID").create();
-			tx.success();
-		}
-
-		createCategoryNodes(categoryFile, graphDb);
-//		createIDCategoryNameFromPageLink(pageFile, "pageid_categoryname.txt", graphDb);
+		// createCategoryNodes(categoryFile, graphDb);
+		createIDCategoryNameFromPageLink(pageFile, "pageid_categoryname.txt", graphDb);
 //
 //		System.out.println("waiting up to 2 minutes for the names and ID indexes to be online...");
 //		try (Transaction tx = graphDb.beginTx()) {
@@ -200,6 +199,7 @@ public class CreateCategoryGraph {
 		// read the file line by line
 
 		final AtomicInteger analyzedPages = new AtomicInteger(0);
+		final AtomicInteger foundCategories = new AtomicInteger(0);
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, false))) {
 			try (BufferedReader br = new BufferedReader(new FileReader(pageLinkFile))) {
 				br.lines().forEach(line -> {
@@ -210,32 +210,55 @@ public class CreateCategoryGraph {
 
 					try (Transaction tx = graphDb.beginTx()) {
 						Matcher matcher = pattern.matcher(line);
+						String page = null, name = null;
+						Integer ID = null;
+						Integer namespace = null;
 						while (matcher.find()) {
-							String page = matcher.group();
-							page = page.replace("(", "");
-							page = page.replace(")", "");
-							String name = page.split(",")[2];
-							int ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
+							try {
+								analyzedPages.incrementAndGet();
+								if (analyzedPages.incrementAndGet() % 1000 == 0) {
+									System.out.println(" - analyzed " + analyzedPages.get() + " pages so far");
+								}
+								page = matcher.group();
+								page = page.replace("(", "").replace(")", "").replace("'", "");
+								name = page.split(",")[2];
+								ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
+								namespace = Integer.parseInt(page.split(",")[1].replaceAll(",'.+", ""));
+							} catch (Exception ex) {
+								// System.err.println("Error parsing " + page);
+								// ex.printStackTrace();
+								continue;
+							}
+							if (namespace != 14) {
+								continue;
+							}
 							ResourceIterator<Node> matches = graphDb.findNodes(categoryLbl, "name", name);
 							if (!matches.hasNext()) {
 								matches.close();
-								return;
+								System.err.println("Not found node for category: " + name);
+								continue;
 							}
-							try {
-								writer.write(ID + ": " + name);
-								writer.newLine();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							if (foundCategories.incrementAndGet() % 100 == 0) {
+								System.out.println(" - found " + foundCategories.getAndIncrement()
+										+ " categories in page file so far");
+								// }
+								try {
+									writer.write(ID + ": " + name);
+									writer.newLine();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 
-							if (analyzedPages.incrementAndGet() % 100000 == 0)
-								System.out.println(" - parsed " + analyzedPages.get() + " pages so far)");
+								if (analyzedPages.incrementAndGet() % 100000 == 0)
+									System.out.println(" - parsed " + analyzedPages.get() + " pages so far)");
+							}
+							tx.success();
 						}
-						tx.success();
 					}
 				});
 			}
+			writer.flush();
 		}
 	}
 

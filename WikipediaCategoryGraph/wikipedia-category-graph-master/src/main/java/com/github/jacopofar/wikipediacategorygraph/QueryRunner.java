@@ -12,7 +12,7 @@ public class QueryRunner {
 		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase(args[0]);
 
 		Map<String, Object> params = new HashMap<>();
-		String query = "MATCH (n)" + "WHERE n.name CONTAINS 'Universe'" + "RETURN n.name";
+		String query = "MATCH (n)" + "WHERE n.name CONTAINS 'Skyscrapers_in_Sacramento'" + "RETURN n.name";
 		Result result = graphDb.execute(query, params);
 		result.forEachRemaining(r -> {
 			System.out.println(r.get("n.name"));

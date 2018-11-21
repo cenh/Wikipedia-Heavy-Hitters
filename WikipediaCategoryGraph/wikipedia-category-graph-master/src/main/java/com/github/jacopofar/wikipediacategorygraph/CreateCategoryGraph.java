@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.DynamicRelationshipType;
@@ -200,67 +199,65 @@ public class CreateCategoryGraph {
 
 	private static void createIDCategoryNameFromPageLink(String pageLinkFile, String outputFile,
 			GraphDatabaseService graphDb) throws FileNotFoundException, IOException {
-		Pattern pattern = Pattern.compile("\\(([^()]*)\\)");
-		Pattern namePattern = Pattern.compile("([\"'])(\\\\?.)*?\\1");
 		// read the file line by line
 
 		final AtomicInteger analyzedPages = new AtomicInteger(0);
 		final AtomicInteger foundCategories = new AtomicInteger(0);
+		final AtomicInteger notFoundCategories = new AtomicInteger(0);
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, false))) {
-			try (BufferedReader br = new BufferedReader(new FileReader(pageLinkFile))) {
-				br.lines().forEach(line -> {
-					// while((line=br.readLine())!=null){
-					// pick the lines containing inserts, not comments or DDL
-					if (!line.startsWith("INSERT INTO ") || line.length() < 2)
-						return;
-
-					try (Transaction tx = graphDb.beginTx()) {
-						Matcher matcher = pattern.matcher(line);
-						String page = null, name = null;
+			try (BufferedWriter errorWriter = new BufferedWriter(new FileWriter("notfound" + outputFile))) {
+				try (BufferedReader br = new BufferedReader(new FileReader(pageLinkFile))) {
+					br.lines().forEach(line -> {
+						if (!line.startsWith("INSERT INTO ") || line.length() < 2)
+							return;
+						String name = null;
 						Integer ID = null;
 						Integer namespace = null;
 						Matcher nameMatcher = null;
-						while (matcher.find()) {
-							try {
-								analyzedPages.incrementAndGet();
-								if (analyzedPages.incrementAndGet() % 1000 == 0) {
-									System.out.println(" - analyzed " + analyzedPages.get() + " pages so far");
-								}
-								page = matcher.group();
-								page = page.replace("(", "").replace(")", "");
-								nameMatcher = namePattern.matcher(page);
-								if (nameMatcher.find()) {
-									name = nameMatcher.group();
-									name = name.replaceAll("^\'", "");
-									if (name.endsWith("'")) {
-										name = name.substring(0, name.length() - 1);
+						try (Transaction tx = graphDb.beginTx()) {
+							for (String page : FileParser.getPages(line)) {
+								name = FileParser.getPageName(page);
+								try {
+									analyzedPages.incrementAndGet();
+									if (analyzedPages.incrementAndGet() % 100000 == 0) {
+										System.out.println(" - analyzed " + analyzedPages.get() + " pages so far");
 									}
-								} else {
+									if (name == null) {
+										continue;
+									}
+//								name = page.split(",")[2].replaceAll(",'.+", "").replace("'", "");
+									if (isInternalCategory(name)) {
+										continue;
+									}
+									ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
+									namespace = Integer.parseInt(page.split(",")[1].replaceAll(",'.+", ""));
+								} catch (Exception ex) {
+									// System.err.println("Error parsing " + page);
+									ex.printStackTrace();
 									continue;
 								}
-								if (isInternalCategory(name)) {
+								if (namespace != 14) {
 									continue;
 								}
-								ID = Integer.parseInt(page.split(",")[0].replaceAll(",'.+", ""));
-								namespace = Integer.parseInt(page.split(",")[1].replaceAll(",'.+", ""));
-							} catch (Exception ex) {
-								// System.err.println("Error parsing " + page);
-								// ex.printStackTrace();
-								continue;
-							}
-							if (namespace != 14) {
-								continue;
-							}
-							ResourceIterator<Node> matches = graphDb.findNodes(categoryLbl, "name", name);
-							if (!matches.hasNext()) {
-								matches.close();
-								System.err.println("Not found node for category: " + name);
-								continue;
-							}
-							if (foundCategories.incrementAndGet() % 100 == 0) {
-								System.out.println(" - found " + foundCategories.getAndIncrement()
-										+ " categories in page file so far");
-								// }
+								ResourceIterator<Node> matches = graphDb.findNodes(categoryLbl, "name", name);
+								if (!matches.hasNext()) {
+									matches.close();
+									notFoundCategories.getAndIncrement();
+									try {
+										errorWriter.write(ID + ": " + name);
+										errorWriter.newLine();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									// System.err.println("Not found node for category: " + name);
+									continue;
+								}
+								if (foundCategories.incrementAndGet() % 1000 == 0) {
+									System.out.println(" - found " + foundCategories.getAndIncrement()
+											+ " categories in page file so far");
+									writer.flush();
+								}
 								try {
 									writer.write(ID + ": " + name);
 									writer.newLine();
@@ -270,14 +267,21 @@ public class CreateCategoryGraph {
 								}
 
 								if (analyzedPages.incrementAndGet() % 100000 == 0)
-									System.out.println(" - parsed " + analyzedPages.get() + " pages so far)");
+									System.out.println(" - parsed " + analyzedPages.get() + " pages so far");
+								tx.success();
 							}
-							tx.success();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					}
-				});
+					});
+				}
+				System.err.println(" - not found " + notFoundCategories.get() + " categories");
+				System.out.println(" - found " + foundCategories.get() + " categories");
+				writer.flush();
+				errorWriter.flush();
+
 			}
-			writer.flush();
 		}
 	}
 

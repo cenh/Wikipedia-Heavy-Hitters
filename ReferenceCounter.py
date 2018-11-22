@@ -2,7 +2,7 @@ from WikiReader import WikiReader
 from collections import defaultdict, Counter
 from enum import Enum
 from Parser import Parser
-import bs4
+import bs4, re
 from CountMinSketch import CountMinSketch
 
 
@@ -141,18 +141,39 @@ class RefParser():
 
 
 if __name__ == "__main__":
+    macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
+                        "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
+                        "Religion", "Science", "Society", "Sports", "Technology", "Universe", "World"]
+    shortest_path_file = "ShortestPaths.txt"
     input_file = "Wikipedia-20181103100040.xml"
     wiki_reader = WikiReader(input_file)
     refParsers = list()
+    macroCMS = {}
+
+    # Load shortest paths into a dict
+    shortestPaths = Parser.getShortestPaths(shortest_path_file)
+
+    # Create a CMS for every macro category
+    for cat in macro_categories:
+        macroCMS[cat] = CountMinSketch(10, 1/(20), 0.01)
+
+    # Go through the pages
     for page_dict in wiki_reader:
+        # Get all the references and categories
         refs = Parser.getRefs(page_dict['revision']['text'])
+        categories = re.findall('\[\[Category:.*\]\]', page_dict['revision']['text'])
+
+        # Get all the macro-category matches from the articles categories
+        matches = [shortestPaths[category.replace("[[Category:", "").replace("]]", "").replace(" ", "_")] for category in categories]
+        # The assigned macro-category. NOTE: No handling of ties!
+        macro = Parser.solveMatches(matches)
+
         refParser = RefParser()
         refParsers.append(refParser)
         for ref in refs:
             refParser.parseRef(ref.attrs.get('name'), ref.next)
 
-    countMinSketch = CountMinSketch(10, 1/(20), 0.01)
-
+    """
     countDict = Counter()
     for refParsed in refParsers:
         for refKey in refParsed.refDict.keys():
@@ -170,9 +191,13 @@ if __name__ == "__main__":
 
     error = 0
     errorCount = 0
+
     for isbn in countDict.keys():
         occurrences = countDict[isbn]
         estimate = countMinSketch.count(isbn)
         error = abs(occurrences-estimate)
         errorCount += 1
     print("error: {}".format(error/errorCount))
+  
+    """
+

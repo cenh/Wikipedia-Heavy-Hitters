@@ -1,0 +1,9 @@
+Cats => Nature : 5
+Dogs => Nature : 4
+Human => Health : 7
+Computer Science => Technology : 5
+Male => Humanity : 4
+Aviculture => Nature : 5
+Columba_(genus) => World : 5
+Domesticated_animals => World : 2
+Domestic_pigeons => Nature : 4

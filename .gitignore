@@ -102,3 +102,13 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+\.idea/misc\.xml
+
+\.idea/modules\.xml
+
+\.idea/vcs\.xml
+
+\.idea/Wikipedia-Confidence-Indicator\.iml
+
+\.idea/workspace\.xml

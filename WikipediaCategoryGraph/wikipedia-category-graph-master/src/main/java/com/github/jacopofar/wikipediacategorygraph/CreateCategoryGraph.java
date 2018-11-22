@@ -74,14 +74,14 @@ public class CreateCategoryGraph {
 //		}
 
 		// createCategoryNodes(categoryFile, graphDb);
-		createIDCategoryNameFromPageLink(pageFile, "pageid_categoryname.txt", graphDb);
+//		createIDCategoryNameFromPageLink(pageFile, "pageid_categoryname.txt", graphDb);
 //
 //		System.out.println("waiting up to 2 minutes for the names and ID indexes to be online...");
 //		try (Transaction tx = graphDb.beginTx()) {
 //			Schema schema = graphDb.schema();
 //			schema.awaitIndexesOnline(2, TimeUnit.MINUTES);
 //		}
-//		createRelationships(categoryLinksFile, "", graphDb);
+		createRelationships(categoryLinksFile, "pageid_categoryname.txt", graphDb);
 		graphDb.shutdown();
 	}
 
@@ -94,7 +94,6 @@ public class CreateCategoryGraph {
 
 		System.out.println("Loading the subcategory edges");
 		try (BufferedReader br = new BufferedReader(new FileReader(categoryLinksFile))) {
-			final ConcurrentHashMap<Integer, Long> articleNodes = new ConcurrentHashMap<>(5000);
 			br.lines().forEach(line -> {
 				// pick the lines containing inserts, not comments or DDL
 				if (!line.startsWith("INSERT INTO ") || line.length() < 2)
@@ -142,8 +141,6 @@ public class CreateCategoryGraph {
 										System.out.println(" - parsed " + doneCats.get() + " categories so far)");
 									return;
 								}
-								if (doneCats.incrementAndGet() % 100000 == 0)
-									System.out.println(" - parsed " + doneCats.get() + " categories so far");
 							});
 					tx.success();
 				}

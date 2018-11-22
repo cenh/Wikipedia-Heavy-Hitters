@@ -8,8 +8,7 @@ import java.util.regex.Pattern;
 public class FileParser {
 
 	public static List<String> getPages(String line) {
-		Pattern namePattern = Pattern.compile("([\"'])(?:(?=(\\\\?))\\2.)*?\\1");
-		Pattern pattern = Pattern.compile("((?<=\\A|,)\\(\\d.*?[\\dl]\\)(?=,|\\Z))+", Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile("((?<=\\A|,)\\(\\d.*?[\\dL]\\)(?=,|\\z))+");
 		List<String> pages = new ArrayList<>();
 
 		line = line.replace("INSERT INTO `page` VALUES ", "");

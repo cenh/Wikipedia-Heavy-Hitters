@@ -12,10 +12,12 @@ public class QueryRunner {
 		GraphDatabaseService graphDb = GraphDBCreator.getGraphDatabase(args[0]);
 
 		Map<String, Object> params = new HashMap<>();
-		String query = "MATCH (n)" + "WHERE n.name CONTAINS 'Skyscrapers_in_Sacramento'" + "RETURN n.name";
+		String query = "MATCH (n)--(other) "//
+				+ "WITH n, count(other) as degree "//
+				+ "WHERE n.name CONTAINS 'Categories_requiring_diffusion' AND degree > 4000 " + "DELETE n";
 		Result result = graphDb.execute(query, params);
 		result.forEachRemaining(r -> {
-			System.out.println(r.get("n.name"));
+			System.out.println(r.get("n.name") + " " + r.get("count(other)"));
 		});
 	}
 }

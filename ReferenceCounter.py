@@ -151,7 +151,7 @@ if __name__ == "__main__":
     macroCMS = {}
 
     # Load shortest paths into a dict
-    shortestPaths = Parser.calculateShortestPaths(shortest_path_file)
+    shortestPaths = Parser.getShortestPaths(shortest_path_file)
 
     # Create a CMS for every macro category
     for cat in macro_categories:
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         # Get all the macro-category matches from the articles categories
         matches = [shortestPaths[category.replace("[[Category:", "").replace("]]", "").replace(" ", "_")] for category in categories]
         # The assigned macro-category. NOTE: No handling of ties!
-        macro = Counter([x[0] for x in matches]).most_common(1)
+        macro = Parser.solveMatches(matches)
 
         refParser = RefParser()
         refParsers.append(refParser)

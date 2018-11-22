@@ -59,7 +59,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>utilizzatore.NatuBot</mainClass>
+                            <mainClass>com.github.jacopofar.wikipediacategorygraph.CalculateClosestMainCategory</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -87,7 +87,12 @@
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
-            <version>2.1.6</version>
+            <version>3.2.0</version>
         </dependency>
+        <dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.8.1</version>
+		</dependency>
     </dependencies>
 </project>

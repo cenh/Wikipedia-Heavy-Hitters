@@ -19,11 +19,20 @@ public class Category {
 	@Index(unique = true)
 	private String name;
 
-	@Relationship(type = "SUBCATEGORY_OF", direction = Relationship.UNDIRECTED)
+	@Relationship(type = DBSchemaProperties.SUBCATEGORY_RELATIONSHIP, direction = Relationship.UNDIRECTED)
 	private List<SubcategoryOfRelationship> subcategoriesOf;
 
-	@Relationship(type = "IN_CATEGORY", direction = Relationship.UNDIRECTED)
+	@Relationship(type = DBSchemaProperties.IN_CATEGORY_RELATIONSHIP, direction = Relationship.UNDIRECTED)
 	private List<ContainerCategoryRelationship> inCategories;
+
+	public Category() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Category(String name) {
+		super();
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;

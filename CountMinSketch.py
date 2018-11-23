@@ -1,5 +1,5 @@
-from bitarray import bitarray
-import mmh3
+#from bitarray import bitarray
+#import mmh3
 import math
 import numpy as np
 

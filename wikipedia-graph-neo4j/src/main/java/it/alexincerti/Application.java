@@ -16,7 +16,7 @@ public class Application {
 		CalculateClosestMainCategory calculateClosestMainCategory = SpringApplication.run(Application.class, args)
 				.getBean(CalculateClosestMainCategory.class);
 		calculateClosestMainCategory.calculateShortestDistancesToMainCategories(
-				"C:\\Users\\Alex\\Documents\\category.sql",
-				"Culture|Geography|History|Humanities|Religion|Science|Sports", "categorymapping.txt", 5, 0l);
+				args[0],
+				args[1], args[2],Integer.parseInt(args[3]), Long.parseLong(args[4]));
 	}
 }

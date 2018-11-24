@@ -51,7 +51,12 @@ public class CalculateClosestMainCategory {
 						if (!line.startsWith("INSERT INTO ") || line.length() < 2)
 							return;
 						
+						int i = 0;
 						while(executor.getQueue().size() >= threadsNumber*2) {
+							if(i++%2== 0) {
+								logger.debug("["+mappedCategories.get()+" mapped categories in "+stopWatch.getTime()/1000+
+										" seconds"+"] On average "+stopWatch.getTime()/mappedCategories.get()/1000+" s/category...");
+							}
 							try {
 								logger.debug("["+executor.getPoolSize()+" threads in the queue] Waiting for threads to finish executing...");
 								Thread.sleep(30000);
@@ -85,10 +90,8 @@ public class CalculateClosestMainCategory {
 												closestNode.getStartCategory(), closestNode.getEndCategory(),
 												closestNode.getLength());
 										logger.debug(summary);
-										if (paths.size() > threadsNumber) {
+										if (paths.size() >= threadsNumber) {
 											logger.debug("["+paths.size()+" paths calculated] Writing on to output file...");
-											logger.debug("["+mappedCategories.get()+" mapped categories in "+stopWatch.getTime()/1000+
-													" seconds"+"] On average "+stopWatch.getTime()/mappedCategories.get()/1000+" s/category...");
 											paths.forEach(p -> {
 												String str = String.format("|%s| -> |%s|: %d",
 														p.getStartCategory(), p.getEndCategory(),
@@ -117,9 +120,8 @@ public class CalculateClosestMainCategory {
 				}
 			}
 		} catch (
-
 		Exception ex) {
-			ex.printStackTrace();
+			logger.error(ex.getMessage(),ex);
 		}
 	}
 

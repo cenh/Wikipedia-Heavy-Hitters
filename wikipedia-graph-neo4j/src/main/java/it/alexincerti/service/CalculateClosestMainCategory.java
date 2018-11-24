@@ -53,7 +53,7 @@ public class CalculateClosestMainCategory {
 						
 						int i = 0;
 						while(executor.getQueue().size() >= threadsNumber*2) {
-							if(i++%2== 0) {
+							if(i++%2== 0 && mappedCategories.get()>0) {
 								logger.debug("["+mappedCategories.get()+" mapped categories in "+stopWatch.getTime()/1000+
 										" seconds"+"] On average "+stopWatch.getTime()/mappedCategories.get()/1000+" s/category...");
 							}

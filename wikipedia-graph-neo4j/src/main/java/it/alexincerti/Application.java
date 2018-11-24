@@ -1,3 +1,4 @@
+
 package it.alexincerti;
 
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,6 @@ public class Application {
 				.getBean(CalculateClosestMainCategory.class);
 		calculateClosestMainCategory.calculateShortestDistancesToMainCategories(
 				"C:\\Users\\Alex\\Documents\\category.sql",
-				"Culture|Geography|History|Humanities|Religion|Science|Sports", "categorymapping.txt", 44l);
+				"Culture|Geography|History|Humanities|Religion|Science|Sports", "categorymapping.txt", 5, 0l);
 	}
 }

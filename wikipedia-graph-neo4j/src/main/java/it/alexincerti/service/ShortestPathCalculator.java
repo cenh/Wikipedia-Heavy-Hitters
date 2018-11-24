@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import it.alexincerti.models.Category;
 import it.alexincerti.repository.CategoryRepository;
-import it.alexincerti.repository.CategoryRepositoryEmbedded;
 
 @Service
 public class ShortestPathCalculator {
@@ -31,8 +30,8 @@ public class ShortestPathCalculator {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	@Autowired
-	private CategoryRepositoryEmbedded categoryRepositoryEmbedded;
+//	@Autowired
+//	private CategoryRepositoryEmbedded categoryRepositoryEmbedded;
 
 	public CategoryPath getClosestNode(String startingNode, List<String> endNodes) {
 		List<Pair<String, String>> pairs = new ArrayList<>();
@@ -153,9 +152,9 @@ public class ShortestPathCalculator {
 //		}
 	// }
 
-	public CategoryRepositoryEmbedded getCategoryRepositoryEmbedded() {
-		return categoryRepositoryEmbedded;
-	}
+//	public CategoryRepositoryEmbedded getCategoryRepositoryEmbedded() {
+//		return categoryRepositoryEmbedded;
+//	}
 
 	public CategoryRepository getCategoryRepository() {
 		return categoryRepository;

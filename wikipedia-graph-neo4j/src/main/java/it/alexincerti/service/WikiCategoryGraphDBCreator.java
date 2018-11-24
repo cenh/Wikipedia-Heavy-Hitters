@@ -78,7 +78,7 @@ public class WikiCategoryGraphDBCreator {
 //
 							if (done.incrementAndGet() % 10000 == 0) {
 								getCategoryRepository().save(categoriesToSave, 0);
-								categoriesToSave.removeAll(categoriesToSave);
+								categoriesToSave.clear();
 								watch.stop();
 								logger.debug(
 										" - loaded " + done.get() + " categories" + ". It took: " + watch.getTime());
@@ -189,7 +189,7 @@ public class WikiCategoryGraphDBCreator {
 		});
 		writer.flush();
 		errorWriter.flush();
-		categoriesToCheck.removeAll(categoriesToCheck);
+		categoriesToCheck.clear();
 	}
 
 	private void createRelationshipsInBatch(List<Pair<String, String>> relationshipsToCreate,
@@ -217,7 +217,7 @@ public class WikiCategoryGraphDBCreator {
 			doneCategories.getAndIncrement();
 		});
 		getCategoryRepository().save(categoriesToSave, 1);
-		relationshipsToCreate.removeAll(relationshipsToCreate);
+		relationshipsToCreate.clear();
 	}
 
 	public void createRelationships(String categoryLinksFile, String pageidCategoryNameFile,

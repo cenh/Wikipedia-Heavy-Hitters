@@ -37,8 +37,7 @@ public class CalculateClosestMainCategory {
 			final AtomicInteger notMappedCategories = new AtomicInteger(0);
 			StopWatch stopWatch = new StopWatch();
 			List<CategoryPath> paths = new CopyOnWriteArrayList<CategoryPath>();
-			ThreadPoolExecutor executor = 
-					  (ThreadPoolExecutor) Executors.newFixedThreadPool(threadsNumber);
+			ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadsNumber);
 
 			List<String> mainCategories = Arrays.asList(mainCategoriesString.split("\\|"));
 			stopWatch.start();
@@ -50,16 +49,18 @@ public class CalculateClosestMainCategory {
 						// pick the lines containing inserts, not comments or DDL
 						if (!line.startsWith("INSERT INTO ") || line.length() < 2)
 							return;
-						
+
 						int i = 0;
-						while(executor.getQueue().size() >= threadsNumber*2) {
-							if(i++%2== 0 && mappedCategories.get()>0) {
-								logger.debug("["+mappedCategories.get()+" mapped categories in "+stopWatch.getTime()/1000+
-										" seconds"+"] On average "+stopWatch.getTime()/mappedCategories.get()/1000+" s/category...");
+						while (executor.getQueue().size() >= threadsNumber * 2) {
+							if (i++ % 2 == 0 && mappedCategories.get() > 0) {
+								logger.debug("[" + mappedCategories.get() + " mapped categories in "
+										+ stopWatch.getTime() / 1000 + " seconds" + "] On average "
+										+ stopWatch.getTime() / mappedCategories.get() / 1000 + " s/category...");
 							}
 							try {
-								logger.debug("["+executor.getPoolSize()+" threads in the queue] Waiting for threads to finish executing...");
-								Thread.sleep(30000);
+								logger.debug("[" + executor.getPoolSize()
+										+ " threads in the queue] Waiting for threads to finish executing...");
+								Thread.sleep(1000);
 							} catch (InterruptedException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -86,16 +87,17 @@ public class CalculateClosestMainCategory {
 										}
 										mappedCategories.incrementAndGet();
 										paths.add(closestNode);
-										String summary = String.format("|%s| -> |%s|: %d",
+										String summary = String.format("|%s| -> |%s|: %d, (%s)",
 												closestNode.getStartCategory(), closestNode.getEndCategory(),
-												closestNode.getLength());
+												closestNode.getLength(), String.join(", ", closestNode.getPath()));
 										logger.debug(summary);
 										if (paths.size() >= threadsNumber) {
-											logger.debug("["+paths.size()+" paths calculated] Writing on to output file...");
+											logger.debug("[" + paths.size()
+													+ " paths calculated] Writing on to output file...");
 											paths.forEach(p -> {
-												String str = String.format("|%s| -> |%s|: %d",
-														p.getStartCategory(), p.getEndCategory(),
-														p.getLength());
+												String str = String.format("|%s| -> |%s|: %d, (%s)",
+														p.getStartCategory(), p.getEndCategory(), p.getLength(),
+														String.join(", ", p.getPath()));
 												try {
 													writer.append(str);
 													writer.newLine();
@@ -109,19 +111,19 @@ public class CalculateClosestMainCategory {
 										}
 									});
 									if (analizedStatements.get() % 10000 == 0) {
-										logger.debug(
-												"Analyzed distances for " + analizedStatements.get() + " categories so far");
-									}if (notMappedCategories.get() > 0 && notMappedCategories.get() % 100 == 0) {
-										logger.debug(
-												notMappedCategories.get() + " categories so far have not been mapped to any macro-category");
+										logger.debug("Analyzed distances for " + analizedStatements.get()
+												+ " categories so far");
+									}
+									if (notMappedCategories.get() > 0 && notMappedCategories.get() % 100 == 0) {
+										logger.debug(notMappedCategories.get()
+												+ " categories so far have not been mapped to any macro-category");
 									}
 								});
 					});
 				}
 			}
-		} catch (
-		Exception ex) {
-			logger.error(ex.getMessage(),ex);
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
 		}
 	}
 

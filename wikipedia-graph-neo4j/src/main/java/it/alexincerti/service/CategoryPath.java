@@ -1,10 +1,18 @@
 package it.alexincerti.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CategoryPath {
 
 	private String startCategory;
 	private String endCategory;
+	private List<String> path;
 	private Long length;
+
+	public CategoryPath() {
+		path = new ArrayList<>();
+	}
 
 	public String getStartCategory() {
 		return startCategory;
@@ -12,6 +20,14 @@ public class CategoryPath {
 
 	public void setStartCategory(String startCategory) {
 		this.startCategory = startCategory;
+	}
+
+	public List<String> getPath() {
+		return path;
+	}
+
+	public void setPath(List<String> path) {
+		this.path = path;
 	}
 
 	public String getEndCategory() {

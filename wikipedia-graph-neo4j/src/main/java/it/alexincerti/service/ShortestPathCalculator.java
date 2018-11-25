@@ -1,7 +1,7 @@
 package it.alexincerti.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.neo4j.driver.internal.InternalPath;
+import org.neo4j.driver.v1.types.Node;
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -33,18 +35,29 @@ public class ShortestPathCalculator {
 //	@Autowired
 //	private CategoryRepositoryEmbedded categoryRepositoryEmbedded;
 
+//	public CategoryPath getClosestNode(String startingNode, List<String> endNodes) {
+//		List<Pair<String, String>> pairs = new ArrayList<>();
+//		for (String endNode : endNodes) {
+//			if (startingNode.equals(endNode)) {
+//				CategoryPath categoryPath = new CategoryPath();
+//				categoryPath.setEndCategory(endNode);
+//				categoryPath.setStartCategory(startingNode);
+//				categoryPath.setLength((long) 0);
+//				return categoryPath;
+//			}
+//			pairs.add(Pair.of(startingNode, endNode));
+//		}
+	// Long pairDistance = getShortestPathLength(pairs);
+//		if (pairDistance != null && (pairDistance.getLength() != null) && //
+//				(closestPair == null || (closestPair.getLength() == null)
+//						|| (pairDistance.getLength() < closestPair.getLength()))) {
+//			closestPair = pairDistance;
+//		}
+//
+//		return getShortestPathInBatch(pairs);
+//	}
+
 	public CategoryPath getClosestNode(String startingNode, List<String> endNodes) {
-		List<Pair<String, String>> pairs = new ArrayList<>();
-		for (String endNode : endNodes) {
-			if (startingNode.equals(endNode)) {
-				CategoryPath categoryPath = new CategoryPath();
-				categoryPath.setEndCategory(endNode);
-				categoryPath.setStartCategory(startingNode);
-				categoryPath.setLength((long) 0);
-				return categoryPath;
-			}
-			pairs.add(Pair.of(startingNode, endNode));
-		}
 		// Long pairDistance = getShortestPathLength(pairs);
 //		if (pairDistance != null && (pairDistance.getLength() != null) && //
 //				(closestPair == null || (closestPair.getLength() == null)
@@ -52,7 +65,15 @@ public class ShortestPathCalculator {
 //			closestPair = pairDistance;
 //		}
 
-		return getShortestPathInBatch(pairs);
+		if (endNodes.contains(startingNode)) {
+			CategoryPath categoryPath = new CategoryPath();
+			categoryPath.setEndCategory(startingNode);
+			categoryPath.setStartCategory(startingNode);
+			categoryPath.setLength((long) 0);
+			return categoryPath;
+		}
+
+		return getShortestPathInBatch(startingNode, endNodes, 20);
 	}
 
 	public CategoryPath getShortestPath(String startingCategoryNode, String endCategoryNode) {
@@ -89,7 +110,8 @@ public class ShortestPathCalculator {
 		}
 	}
 
-	private CategoryPath getShortestPathInBatch(List<Pair<String, String>> startEndNodes) {
+	// on all macro categories (25) takes 121s
+	public CategoryPath getShortestPathInBatchOld(List<Pair<String, String>> startEndNodes) {
 		String query = "MATCH p=shortestPath((a:Category {name: $startNode})-[*]->(b:Category {name: $endNode})) RETURN a.name, b.name, length(p)";
 		StringBuilder finalQuery = new StringBuilder();
 		Session session = getSessionFactory().openSession();
@@ -119,6 +141,52 @@ public class ShortestPathCalculator {
 		categoryPath.setStartCategory(path.get("a.name").toString());
 		categoryPath.setEndCategory(path.get("b.name").toString());
 		categoryPath.setLength(Long.parseLong(path.get("length(p)").toString()));
+		return categoryPath;
+	}
+
+	// https://neo4j.com/developer/kb/all-shortest-paths-between-set-of-nodes/
+	// approach
+	// on all macro categories (25) takes 4s
+	private CategoryPath getShortestPathInBatch(String startNode, List<String> endNodes, Integer maxPathLength) {
+		String query = "MATCH (n:Category), (m:Category) where n.name IN {endNodes} AND m.name = $startNode\r\n"
+				+ "WITH collect(n) as nodes, m\r\n" + "UNWIND nodes as n\r\n"
+				+ "MATCH path = allShortestPaths( (m)-[*..$maxLength]-(n) )\r\n" + "RETURN path";
+		StringBuilder finalQuery = new StringBuilder();
+		Session session = getSessionFactory().openSession();
+		HashMap<String, Object> parameters = new HashMap<>();
+		finalQuery.append(query.replace("$maxLength", maxPathLength.toString()));
+		parameters.put("startNode", startNode);
+		parameters.put("endNodes", endNodes);
+		parameters.put("maxLength", maxPathLength);
+		Result result = session.query(finalQuery.toString(), parameters);
+		Iterable<Map<String, Object>> iterable = () -> result.iterator();
+		Stream<Map<String, Object>> targetStream = StreamSupport.stream(iterable.spliterator(), false);
+		Map<String, Object> path = targetStream.min((a, b) -> {
+			InternalPath path1 = (InternalPath) a.get("path");
+			InternalPath path2 = (InternalPath) b.get("path");
+			return ((Long) StreamSupport.stream(path1.spliterator(), false).count())
+					.compareTo(((Long) StreamSupport.stream(path2.spliterator(), false).count()));
+		}).orElseGet(() -> null);
+
+		if (path == null) {
+			return null;
+		}
+
+		InternalPath shortest = (InternalPath) path.get("path");
+		CategoryPath categoryPath = new CategoryPath();
+		Long size = 1l;
+		Iterator<Node> nodes = shortest.nodes().iterator();
+		String startNodeName = nodes.next().get("name").asString();
+		categoryPath.setStartCategory(startNode);
+		categoryPath.getPath().add(startNodeName);
+		Node lastNode = null;
+		while (nodes.hasNext()) {
+			size++;
+			lastNode = nodes.next();
+			categoryPath.getPath().add(lastNode.get("name").asString());
+		}
+		categoryPath.setEndCategory(lastNode.get("name").asString());
+		categoryPath.setLength(size);
 		return categoryPath;
 	}
 

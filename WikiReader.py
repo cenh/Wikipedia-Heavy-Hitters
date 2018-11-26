@@ -134,7 +134,7 @@ class WikiReader:
         root.clear()
         return layers[0]
 
-input_file = "Wikipedia-20181103100040.xml"
-wiki_reader = WikiReader(input_file)
-for page_dict in wiki_reader:
-    print(page_dict)
+#input_file = "Wikipedia-20181103100040.xml"
+#wiki_reader = WikiReader(input_file)
+#for page_dict in wiki_reader:
+    # print(page_dict)

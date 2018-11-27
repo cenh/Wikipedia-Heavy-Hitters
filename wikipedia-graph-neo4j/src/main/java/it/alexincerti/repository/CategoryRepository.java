@@ -30,6 +30,10 @@ public interface CategoryRepository extends Neo4jRepository<Category, Long> {
 	@Query("MATCH p=shortestPath((a:Category {name: {0}})-[*]->(b:Category {name: {1}})) RETURN p;")
 	public Iterable<Map<String, Object>> getShortestPath(String startCategoryName, String endCategoryName);
 
+	@Query("MATCH (n:Category), (m:Category) where n.name IN {1} AND m.name = {0} WITH collect(n) as nodes, m UNWIND nodes as n MATCH path = allShortestPaths( (m)-[*..{2}]-(n) ) RETURN path")
+	public Iterable<Map<String, Object>> getShortestPath(String startCategoryName, List<String> endCategoryNames,
+			int maxLength);
+
 	@Query("MATCH p=shortestPath((a:Category {name: {0}})-[*]->(b:Category {name: {1}})) RETURN length(p);")
 	public Long getShortestPathLength(String startCategoryName, String endCategoryName);
 }

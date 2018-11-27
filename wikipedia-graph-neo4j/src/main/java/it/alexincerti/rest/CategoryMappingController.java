@@ -1,12 +1,17 @@
 package it.alexincerti.rest;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +21,8 @@ import it.alexincerti.service.CategoryPath;
 import it.alexincerti.service.ShortestPathCalculator;
 
 @RestController
-public class HelloController {
+public class CategoryMappingController {
+	Logger logger = LoggerFactory.getLogger(CategoryMappingController.class);
 
 	@Autowired
 	private ShortestPathCalculator shortestPathCalculator;
@@ -40,14 +46,23 @@ public class HelloController {
 	}
 
 	public String getMacroCategoryMapping(List<String> startCategories, List<String> endCategories, int maxPathLength) {
-		Map<String, Long> mappingCount = new HashMap<>();
+		Map<String, Long> mappingCount = new ConcurrentHashMap<String, Long>();
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(startCategories.size());
 		startCategories.forEach(startCategory -> {
-			Map<String, CategoryPath> paths = getCategoryMapping(startCategory, endCategories, 20);
-			paths.forEach((k, v) -> {
-				mappingCount.put(k, mappingCount.getOrDefault(k, Long.MAX_VALUE) + v.getLength());
+			executor.execute(() -> {
+				Map<String, CategoryPath> paths = getCategoryMapping(startCategory, endCategories, 20);
+				paths.forEach((k, v) -> {
+					mappingCount.put(k, mappingCount.getOrDefault(k, Long.MAX_VALUE) + v.getLength());
+				});
 			});
 		});
-
+		try {
+			executor.shutdown();
+			executor.awaitTermination(3, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			logger.error("Error waiting for all threads to execute", e);
+			e.printStackTrace();
+		}
 		String category = mappingCount.keySet().stream()
 				.min((k1, k2) -> mappingCount.get(k1).compareTo(mappingCount.get(k2))).orElse("");
 //		String macroCategory = categoryCountMap.keySet().stream()

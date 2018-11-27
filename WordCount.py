@@ -1,6 +1,7 @@
 from mrjob.job import MRJob
 from mrjob.step import MRStep
-from nltk.corpus import stopwords # NOTE: You have to do nltk.download('stopwords') for it to work!
+# NOTE: You have to do nltk.download('stopwords') for it to work!
+from nltk.corpus import stopwords
 import re
 
 stopWords = set(stopwords.words('english'))
@@ -15,14 +16,16 @@ additional_stopWords = {'title', 'name', 'ref', 'http', 'url', 'web', 'cite', 'c
 stopWords = stopWords.union(additional_stopWords)
 
 # Read file containing paths to XML files to read
+
+
 class PageWordCountProtocol(object):
-    BASE_FOLDER = "/home/cenh/Study/Wikipedia-Confidence-Indicator/articles/"
+    BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
 
     def read(self, filename):
         path = PageWordCountProtocol.BASE_FOLDER + filename.decode()
 
         result = []
-        with open(path) as f:
+        with open(path, 'r', encoding='utf-8') as f:
             for line in f:
                 if not line.startswith('|'):
                     result.append(line)
@@ -30,7 +33,7 @@ class PageWordCountProtocol(object):
         return None, result
 
     def write(self, key, value):
-        with open(PageWordCountProtocol.BASE_FOLDER + 'mr_output.txt', 'a') as f:
+        with open(PageWordCountProtocol.BASE_FOLDER + 'mr_output.txt', 'a', encoding='utf-8') as f:
             f.write('{} => {}\n'.format(key[1], value))
 
         return bytes('{word} => {count}'.format(

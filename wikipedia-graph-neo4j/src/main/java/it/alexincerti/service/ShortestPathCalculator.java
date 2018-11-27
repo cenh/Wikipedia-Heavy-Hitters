@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -188,6 +189,42 @@ public class ShortestPathCalculator {
 		categoryPath.setEndCategory(lastNode.get("name").asString());
 		categoryPath.setLength(size);
 		return categoryPath;
+	}
+
+	public List<CategoryPath> getShortestPathList(String startNode, List<String> endNodes, Integer maxPathLength) {
+		String query = "MATCH (n:Category), (m:Category) where n.name IN {endNodes} AND m.name = $startNode\r\n"
+				+ "WITH collect(n) as nodes, m\r\n" + "UNWIND nodes as n\r\n"
+				+ "MATCH path = allShortestPaths( (m)-[*..$maxLength]-(n) )\r\n" + "RETURN path";
+		StringBuilder finalQuery = new StringBuilder();
+		Session session = getSessionFactory().openSession();
+		HashMap<String, Object> parameters = new HashMap<>();
+		finalQuery.append(query.replace("$maxLength", maxPathLength.toString()));
+		parameters.put("startNode", startNode);
+		parameters.put("endNodes", endNodes);
+		parameters.put("maxLength", maxPathLength);
+		Result result = session.query(finalQuery.toString(), parameters);
+		Iterable<Map<String, Object>> iterable = () -> result.iterator();
+		Stream<Map<String, Object>> targetStream = StreamSupport.stream(iterable.spliterator(), false);
+		List<CategoryPath> paths = targetStream.map(path -> {
+			InternalPath shortest = (InternalPath) path.get("path");
+			CategoryPath categoryPath = new CategoryPath();
+			Long size = 1l;
+			Iterator<Node> nodes = shortest.nodes().iterator();
+			String startNodeName = nodes.next().get("name").asString();
+			categoryPath.setStartCategory(startNode);
+			categoryPath.getPath().add(startNodeName);
+			Node lastNode = null;
+			while (nodes.hasNext()) {
+				size++;
+				lastNode = nodes.next();
+				categoryPath.getPath().add(lastNode.get("name").asString());
+			}
+			categoryPath.setEndCategory(lastNode.get("name").asString());
+			categoryPath.setLength(size);
+			return categoryPath;
+		}).collect(Collectors.toList());
+
+		return paths;
 	}
 
 	public SessionFactory getSessionFactory() {

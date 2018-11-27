@@ -16,6 +16,17 @@ class Parser:
         return dict
 
     @staticmethod
+    def getWordsArticle(file):
+        words = []
+        with open(file) as f:
+            for line in f:
+                line = line.split(" => ")
+                word = line[0].replace("#", "")
+                count = int(line[1].replace("\n", ""))
+                words.append((word, count))
+        return words
+
+    @staticmethod
     def getAllPages(file):
         handler = open(file).read()
         soup = BeautifulSoup(handler, 'xml')

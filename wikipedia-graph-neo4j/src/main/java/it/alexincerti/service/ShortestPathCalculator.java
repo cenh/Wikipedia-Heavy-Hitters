@@ -264,4 +264,35 @@ public class ShortestPathCalculator {
 	public CategoryRepository getCategoryRepository() {
 		return categoryRepository;
 	}
+
+	public CategoryPath getShortestPath(String startCategory, String endCategory, int maxPathLength) {
+		String query = "MATCH p=shortestPath((a:Category {name: $startNode})-[*]->(b:Category {name: $endNode})) RETURN p";
+		Session session = getSessionFactory().openSession();
+		HashMap<String, Object> parameters = new HashMap<>();
+		parameters.put("startNode", startCategory);
+		parameters.put("endNode", endCategory);
+		Result result = session.query(query, parameters);
+		Iterable<Map<String, Object>> iterable = () -> result.iterator();
+		Iterator<Map<String, Object>> iterator = iterable.iterator();
+		if (iterator.hasNext()) {
+			InternalPath shortest = (InternalPath) iterator.next().get("p");
+			CategoryPath categoryPath = new CategoryPath();
+			Long size = 1l;
+			Iterator<Node> nodes = shortest.nodes().iterator();
+			String startNodeName = nodes.next().get("name").asString();
+			categoryPath.setStartCategory(startNodeName);
+			categoryPath.getPath().add(startNodeName);
+			Node lastNode = null;
+			while (nodes.hasNext()) {
+				size++;
+				lastNode = nodes.next();
+				categoryPath.getPath().add(lastNode.get("name").asString());
+			}
+			categoryPath.setEndCategory(lastNode.get("name").asString());
+			categoryPath.setLength(size);
+			return categoryPath;
+		}
+		logger.debug("Could find shortest path between " + startCategory + " and " + endCategory);
+		return null;
+	}
 }

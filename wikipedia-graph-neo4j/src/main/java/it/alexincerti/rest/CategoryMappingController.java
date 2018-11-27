@@ -45,6 +45,12 @@ public class CategoryMappingController {
 		return categoryCountMap;
 	}
 
+	@GetMapping("/shortestPath")
+	public CategoryPath getShortestPath(@RequestParam("startCategory") String startCategory,
+			@RequestParam("endCategory") String endCategory, @RequestParam("maxPathLength") int maxPathLength) {
+		return getShortestPathCalculator().getShortestPath(startCategory, endCategory, maxPathLength);
+	}
+
 	public String getMacroCategoryMapping(List<String> startCategories, List<String> endCategories, int maxPathLength) {
 		Map<String, Long> mappingCount = new ConcurrentHashMap<String, Long>();
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(startCategories.size());

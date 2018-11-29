@@ -5,6 +5,7 @@ import re
 import time
 import WordCount
 import grequests
+from sys import argv
 
 
 def getCategoryMapping(categories, macro_categories):
@@ -19,6 +20,16 @@ def log(f, message):
     f.flush()
 
 
+def log_stats(f, macro_categories, cnt, macroCMS, time):
+    log(f, "Parsed {} articles in {}s for an average of {}s".format(
+        cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
+
+    for cat in macro_categories:
+        log(f, cat + ": " + str(macroCMS[cat].getHeavyHitters()))
+    for cat in macro_categories:
+        log(f, "{} mapped to {}".format(mapping_distribution[cat], cat))
+
+
 if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
@@ -28,6 +39,14 @@ if __name__ == "__main__":
     tmp_file = "articles/tmp.txt"  # Temporary file used to write to
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from
+    #
+    if(len(argv) < 4):
+        print("Error: 4 arguments required")
+        print("Argument 0: number of articles to skip from start")
+        print("Argument 1: total number of articles to parse")
+        print("Argument 2: number of articles after which every time a log is printed")
+        print("Argument 3: number of articles after which every time partial results are printed")
+        exit()
     #
     wiki_reader = WikiReader(dataset_file)
     macroCMS = {}
@@ -48,9 +67,12 @@ if __name__ == "__main__":
                 continue
             f.write(page_dict['revision']['text'])
 
-        if(cnt > 200):
-            break
         cnt += 1
+        if(cnt < int(argv[0])):
+            continue
+
+        if(cnt > int(argv[1])):
+            break
 
         open(output_file, 'w').close()
         mrJob.run_job()
@@ -66,15 +88,11 @@ if __name__ == "__main__":
             mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
-        if(cnt % 10 == 0):
+        if(cnt % int(argv[2]) == 0):
             log(log_file, "Parsed {} articles so far...".format(cnt))
+        if(cnt % int(argv[3]) == 0):
+            log_stats(log_file, macro_categories, cnt, macroCMS, time)
 
-    log(log_file, "Parsed {} articles in {}s for an average of {}s".format(
-        cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
-
-    for cat in macro_categories:
-        log(log_file, cat + ": " + str(macroCMS[cat].getHeavyHitters()))
-    for cat in macro_categories:
-        log(log_file, "{} mapped to {}".format(mapping_distribution[cat], cat))
+    log_stats(log_file, macro_categories, cnt, macroCMS, time)
     #
     log_file.close()

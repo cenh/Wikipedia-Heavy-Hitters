@@ -91,7 +91,7 @@ public class CategoryMappingController {
 			return macroCategoryMapping;
 		} catch (Exception e) {
 			logger.error(String.format("Error calculating mapping staring categories |%s| end categories |%s|",
-					String.join(", ", startNodes), String.join(", ", endNodes)));
+					String.join(", ", startNodes), String.join(", ", endNodes)), e);
 			return null;
 		}
 	}

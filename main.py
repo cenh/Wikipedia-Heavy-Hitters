@@ -68,5 +68,6 @@ if __name__ == "__main__":
         cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
 
     for cat in macro_categories:
-        log("{} mapped to {}".format(mapping_distribution[cat], cat))
         log(cat + ": " + str(macroCMS[cat].getHeavyHitters()))
+    for cat in macro_categories:
+        log("{} mapped to {}".format(mapping_distribution[cat], cat))

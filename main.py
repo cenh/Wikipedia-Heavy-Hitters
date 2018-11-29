@@ -41,7 +41,7 @@ if __name__ == "__main__":
     time_start = time.time()
     mrJob = WordCount.WikiWordCount(args=[article_list])
     for page_dict in wiki_reader:
-        if(cnt > 200):
+        if(cnt > 20):
             break
         cnt += 1
         with open(tmp_file, 'w', encoding='utf-8') as f:
@@ -68,5 +68,5 @@ if __name__ == "__main__":
         cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
 
     for cat in macro_categories:
-        log(mapping_distribution[cat] + " mapped to " + cat)
+        log("{} mapped to {}".format(mapping_distribution[cat], cat))
         log(cat + ": " + str(macroCMS[cat].getHeavyHitters()))

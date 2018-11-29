@@ -82,6 +82,9 @@ public class CategoryMappingController {
 		List<String> startNodes = Arrays.asList(startCategories.split("::"));
 		List<String> endNodes = Arrays.asList(endCategories.split("::"));
 
+		logger.debug(String.format("Calculating mapping staring categories |%s| end categories |%s|",
+				String.join(", ", startNodes), String.join(", ", endNodes)));
+
 		return getMacroCategoryMapping(startNodes, endNodes, 20);
 	}
 

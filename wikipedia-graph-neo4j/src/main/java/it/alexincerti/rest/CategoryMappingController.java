@@ -86,7 +86,7 @@ public class CategoryMappingController {
 				String.join(", ", startNodes), String.join(", ", endNodes)));
 
 		String macroCategoryMapping = getMacroCategoryMapping(startNodes, endNodes, 20);
-		logger.debug(String.format("Calculating mapping staring categories |%s| end categories |%s| --> |%s|",
+		logger.info(String.format("Calculating mapping staring categories |%s| end categories |%s| --> |%s|",
 				String.join(", ", startNodes), String.join(", ", endNodes)), macroCategoryMapping);
 		return macroCategoryMapping;
 	}

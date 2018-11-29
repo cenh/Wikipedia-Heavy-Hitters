@@ -22,7 +22,7 @@ if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
                         "Religion", "Science", "Society", "Sports", "Technology", "Universe", "World"]
-    dataset_file = "articles/Wikipedia-20181103100040.xml"
+    dataset_file = "/var/articles.xml"
 
     tmp_file = "articles/tmp.txt"  # Temporary file used to write to
     output_file = "articles/mr_output.txt"  # The output file from MRJob
@@ -41,11 +41,14 @@ if __name__ == "__main__":
     time_start = time.time()
     mrJob = WordCount.WikiWordCount(args=[article_list])
     for page_dict in wiki_reader:
-        if(cnt > 50):
+        with open(tmp_file, 'w', encoding='utf-8') as f:
+            if(page_dict['revision']['text'].startswith('#REDIRECT')):
+                continue
+            f.write(page_dict['revision']['text'])
+
+        if(cnt > 200):
             break
         cnt += 1
-        with open(tmp_file, 'w', encoding='utf-8') as f:
-            f.write(page_dict['revision']['text'])
 
         open(output_file, 'w').close()
         mrJob.run_job()

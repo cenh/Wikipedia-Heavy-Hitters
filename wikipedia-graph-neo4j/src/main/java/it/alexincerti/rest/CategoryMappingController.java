@@ -79,16 +79,21 @@ public class CategoryMappingController {
 	@GetMapping("/mapCategory")
 	public String mappingEntrypoint(@RequestParam("startCategories") String startCategories,
 			@RequestParam("endCategories") String endCategories) {
+		logger.info(String.format("Mapping function called staring categories |%s| end categories |%s|",
+				startCategories, endCategories));
 		List<String> startNodes = Arrays.asList(startCategories.split("::"));
 		List<String> endNodes = Arrays.asList(endCategories.split("::"));
 
-		logger.debug(String.format("Calculating mapping staring categories |%s| end categories |%s|",
-				String.join(", ", startNodes), String.join(", ", endNodes)));
-
-		String macroCategoryMapping = getMacroCategoryMapping(startNodes, endNodes, 20);
-		logger.info(String.format("Calculating mapping staring categories |%s| end categories |%s| --> |%s|",
-				String.join(", ", startNodes), String.join(", ", endNodes)), macroCategoryMapping);
-		return macroCategoryMapping;
+		try {
+			String macroCategoryMapping = getMacroCategoryMapping(startNodes, endNodes, 20);
+			logger.info(String.format("Calculating mapping staring categories |%s| end categories |%s| --> |%s|",
+					String.join(", ", startNodes), String.join(", ", endNodes)), macroCategoryMapping);
+			return macroCategoryMapping;
+		} catch (Exception e) {
+			logger.error(String.format("Error calculating mapping staring categories |%s| end categories |%s|",
+					String.join(", ", startNodes), String.join(", ", endNodes)));
+			return null;
+		}
 	}
 
 }

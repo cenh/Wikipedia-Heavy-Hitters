@@ -40,7 +40,7 @@ if __name__ == "__main__":
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from
     #
-    if(len(argv) < 4):
+    if(len(argv) < 5):
         print("Error: 4 arguments required")
         print("Argument 0: number of articles to skip from start")
         print("Argument 1: total number of articles to parse")
@@ -68,10 +68,10 @@ if __name__ == "__main__":
             f.write(page_dict['revision']['text'])
 
         cnt += 1
-        if(cnt < int(argv[0])):
+        if(cnt < int(argv[1])):
             continue
 
-        if(cnt > int(argv[1])):
+        if(cnt > int(argv[2])):
             break
 
         open(output_file, 'w').close()
@@ -88,9 +88,9 @@ if __name__ == "__main__":
             mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
-        if(cnt % int(argv[2]) == 0):
-            log(log_file, "Parsed {} articles so far...".format(cnt))
         if(cnt % int(argv[3]) == 0):
+            log(log_file, "Parsed {} articles so far...".format(cnt))
+        if(cnt % int(argv[4]) == 0):
             log_stats(log_file, macro_categories, cnt, macroCMS, time)
 
     log_stats(log_file, macro_categories, cnt, macroCMS, time)

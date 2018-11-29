@@ -41,7 +41,7 @@ if __name__ == "__main__":
     time_start = time.time()
     mrJob = WordCount.WikiWordCount(args=[article_list])
     for page_dict in wiki_reader:
-        if(cnt > 20):
+        if(cnt > 50):
             break
         cnt += 1
         with open(tmp_file, 'w', encoding='utf-8') as f:

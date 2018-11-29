@@ -14,24 +14,25 @@ def getCategoryMapping(categories, macro_categories):
     return response.decode()
 
 
-def log(message):
-    print("### Log ### " + message)
+def log(f, message):
+    f.write(message+"\n")
 
 
 if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
                         "Religion", "Science", "Society", "Sports", "Technology", "Universe", "World"]
+    #dataset_file = "articles/Wikipedia-20181103100040.xml"
     dataset_file = "/var/articles.xml"
-
     tmp_file = "articles/tmp.txt"  # Temporary file used to write to
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from
-
+    #
     wiki_reader = WikiReader(dataset_file)
-
     macroCMS = {}
     mapping_distribution = {}
+    log_file = open("logs.txt", 'w', encoding='utf-8')
+    #
     for cat in macro_categories:
         macroCMS[cat] = CountMinSketch(
             fraction=0.0005, tolerance=0.0001, allowed_failure_probability=0.01)
@@ -65,12 +66,14 @@ if __name__ == "__main__":
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
         if(cnt % 10 == 0):
-            log("Parsed {} articles so far...".format(cnt))
+            log(log_file, "Parsed {} articles so far...".format(cnt))
 
-    log("Parsed {} articles in {}s for an average of {}s".format(
+    log(log_file, "Parsed {} articles in {}s for an average of {}s".format(
         cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
 
     for cat in macro_categories:
-        log(cat + ": " + str(macroCMS[cat].getHeavyHitters()))
+        log(log_file, cat + ": " + str(macroCMS[cat].getHeavyHitters()))
     for cat in macro_categories:
-        log("{} mapped to {}".format(mapping_distribution[cat], cat))
+        log(log_file, "{} mapped to {}".format(mapping_distribution[cat], cat))
+    #
+    log_file.close()

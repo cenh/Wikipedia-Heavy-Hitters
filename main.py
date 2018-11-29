@@ -14,6 +14,10 @@ def getCategoryMapping(categories, macro_categories):
     return response.decode()
 
 
+def log(message):
+    print("### Log ### " + message)
+
+
 if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
@@ -27,14 +31,18 @@ if __name__ == "__main__":
     wiki_reader = WikiReader(dataset_file)
 
     macroCMS = {}
+    mapping_distribution = {}
     for cat in macro_categories:
         macroCMS[cat] = CountMinSketch(
             fraction=0.0005, tolerance=0.0001, allowed_failure_probability=0.01)
+        mapping_distribution[cat] = 0
 
     cnt = 0
     time_start = time.time()
     mrJob = WordCount.WikiWordCount(args=[article_list])
     for page_dict in wiki_reader:
+        if(cnt > 200):
+            break
         cnt += 1
         with open(tmp_file, 'w', encoding='utf-8') as f:
             f.write(page_dict['revision']['text'])
@@ -50,11 +58,15 @@ if __name__ == "__main__":
         # The assigned macro-category. NOTE: No handling of ties!
         macro = getCategoryMapping(categories, macro_categories)
         if(macro):
+            mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
+        if(cnt % 10 == 0):
+            log()
 
-    print("Parsed {} articles in {}s for an average of {}s".format(
+    log("Parsed {} articles in {}s for an average of {}s".format(
         cnt, (time.time()-time_start), (time.time()-time_start)/cnt))
 
     for cat in macro_categories:
-        print(cat + ": " + str(macroCMS[cat].getHeavyHitters()))
+        log(mapping_distribution[cat] + " mapped to " + cat)
+        log(cat + ": " + str(macroCMS[cat].getHeavyHitters()))

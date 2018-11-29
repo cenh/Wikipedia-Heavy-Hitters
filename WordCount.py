@@ -19,7 +19,8 @@ stopWords = stopWords.union(additional_stopWords)
 
 
 class PageWordCountProtocol(object):
-    BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
+    #BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
+    BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
 
     def read(self, filename):
         path = PageWordCountProtocol.BASE_FOLDER + filename.decode()

@@ -9,7 +9,7 @@ import grequests
 
 def getCategoryMapping(categories, macro_categories):
     req = grequests.get(
-        'http://localhost:8080/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
+        'http://localhost:8081/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
     response = req.send().response.content
     return response.decode()
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
         if(cnt % 10 == 0):
-            log()
+            log("Parsed {} articles so far...".format(cnt))
 
     log("Parsed {} articles in {}s for an average of {}s".format(
         cnt, (time.time()-time_start), (time.time()-time_start)/cnt))

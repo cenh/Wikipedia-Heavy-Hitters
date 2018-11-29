@@ -1,6 +1,7 @@
 package it.alexincerti.rest;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,15 @@ public class CategoryMappingController {
 
 	public Map<String, CategoryPath> getCategoryMapping(String startCategory, List<String> endNodes,
 			int maxPathLength) {
+		if (endNodes.contains(startCategory)) {
+			CategoryPath categoryPath = new CategoryPath();
+			categoryPath.setEndCategory(startCategory);
+			categoryPath.setStartCategory(startCategory);
+			categoryPath.setLength((long) 0);
+			HashMap<String, CategoryPath> hashMap = new HashMap<>();
+			hashMap.put(startCategory, categoryPath);
+			return hashMap;
+		}
 		List<CategoryPath> paths = getShortestPathCalculator().getShortestPathList(startCategory, endNodes,
 				maxPathLength);
 		Map<String, CategoryPath> categoryCountMap = paths.stream().collect(Collectors.groupingBy(
@@ -79,7 +89,7 @@ public class CategoryMappingController {
 	@GetMapping("/mapCategory")
 	public String mappingEntrypoint(@RequestParam("startCategories") String startCategories,
 			@RequestParam("endCategories") String endCategories) {
-		logger.info(String.format("Mapping function called staring categories |%s| end categories |%s|",
+		logger.debug(String.format("Mapping function called staring categories |%s| end categories |%s|",
 				startCategories, endCategories));
 		List<String> startNodes = Arrays.asList(startCategories.split("::"));
 		List<String> endNodes = Arrays.asList(endCategories.split("::"));

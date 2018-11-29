@@ -16,6 +16,7 @@ def getCategoryMapping(categories, macro_categories):
 
 def log(f, message):
     f.write(message+"\n")
+    f.flush()
 
 
 if __name__ == "__main__":

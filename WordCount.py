@@ -10,17 +10,17 @@ additional_stopWords = {'title', 'name', 'ref', 'http', 'url', 'web', 'cite', 'c
                         'issue', 'doi', 'archive', 'name', 'also', 'category', 'file', 'first1', 'htm', 'isbn',
                         'jpg', 'many', 'pdf', 'png', 'abbr', 'usually', 'nbsp', 'html', 'first2', 'last2', 'author',
                         'archiveurl', 'first3', 'last3', 'id', 'including', 'pg', 'archivedate', 'article', 'size',
-                        'volume', 'center', 'align', 'style', 'text', 'used', 'book', 'books', 'page', 'pmid', 'may',
+                        'volume', 'one', 'new', 'center', 'align', 'style', 'text', 'used', 'book', 'books', 'page', 'pmid', 'may',
                         'thumb', 'px', 'news', 'location', 'convert', 'th', 'university', 'website', 'google', 'df',
-                        'uk', 'de', 'en', 'deadurl', 'access', 'yes', 'edu'}
+                        'uk', 'de', 'sfn', 'gov', 'vauthors', 'pmc', 'en', 'al', 'br', 'deadurl', 'access', 'yes', 'edu'}
 stopWords = stopWords.union(additional_stopWords)
 
 # Read file containing paths to XML files to read
 
 
 class PageWordCountProtocol(object):
-    #BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
-    BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
+    BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
+    #BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
 
     def read(self, filename):
         path = PageWordCountProtocol.BASE_FOLDER + filename.decode()

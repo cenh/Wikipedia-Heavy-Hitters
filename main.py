@@ -6,13 +6,19 @@ import time
 import WordCount
 import grequests
 from sys import argv
+import sys
+import traceback
 
 
 def getCategoryMapping(categories, macro_categories):
-    req = grequests.get(
-        'http://localhost:8081/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
-    response = req.send().response.content
-    return response.decode()
+    try:
+        req = grequests.get(
+            'http://localhost:8081/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
+        response = req.send().response.content
+        return response.decode()
+    except Exception:
+        print("Error in contacting the http mapper interface\n" +
+              "{0}".format(traceback.print_exc()))
 
 
 def log(f, message):
@@ -34,8 +40,8 @@ if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
                         "Religion", "Science", "Society", "Sports", "Technology", "Universe", "World"]
-    #dataset_file = "articles/Wikipedia-20181103100040.xml"
-    dataset_file = "/var/articles.xml"
+    dataset_file = "articles/Wikipedia-20181103100040.xml"
+    # dataset_file = "/var/articles.xml"
     tmp_file = "articles/tmp.txt"  # Temporary file used to write to
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from

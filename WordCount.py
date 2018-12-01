@@ -12,15 +12,15 @@ additional_stopWords = {'title', 'name', 'ref', 'http', 'url', 'web', 'cite', 'c
                         'archiveurl', 'first3', 'last3', 'id', 'including', 'pg', 'archivedate', 'article', 'size',
                         'volume', 'one', 'new', 'center', 'align', 'style', 'text', 'used', 'book', 'books', 'page', 'pmid', 'may',
                         'thumb', 'px', 'news', 'location', 'convert', 'th', 'university', 'website', 'google', 'df',
-                        'uk', 'de', 'sfn', 'gov', 'vauthors', 'pmc', 'en', 'al', 'br', 'deadurl', 'access', 'yes', 'edu'}
+                        'uk', 'de', 'sfn', 'gov', 'vauthors', 'pmc', 'djdbns', 'mdash', 'en', 'al', 'br', 'deadurl', 'access', 'yes', 'edu'}
 stopWords = stopWords.union(additional_stopWords)
 
 # Read file containing paths to XML files to read
 
 
 class PageWordCountProtocol(object):
-    BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
-    #BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
+    #BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
+    BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
 
     def read(self, filename):
         path = PageWordCountProtocol.BASE_FOLDER + filename.decode()

@@ -90,7 +90,7 @@ if __name__ == "__main__":
             "]]", "").replace(" ", "_") for category in categories]
         # The assigned macro-category. NOTE: No handling of ties!
         macro = getCategoryMapping(categories, macro_categories)
-        if(macro):
+        if(macro in macro_categories):
             mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])

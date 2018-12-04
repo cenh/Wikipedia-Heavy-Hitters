@@ -12,6 +12,7 @@ def pieChart(cats):
             shadow=True, startangle=90)
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     plt.show()
+    return
 
 def columnChart(heavy_hitters, title, amount):
     words = []
@@ -26,8 +27,15 @@ def columnChart(heavy_hitters, title, amount):
     locs, labels = plt.xticks()
     plt.setp(labels, rotation=90)
     plt.show()
-    return 0
+    return
 
+def uniqueWords(heavy_hitters, cat, top=10):
+    unique_words = set([heavy_hitters[cat][i] for i in range(0, len(heavy_hitters[cat][:top*2]), 2)])
+    for k, _ in heavy_hitters.items():
+        if k == cat:
+            continue
+        unique_words = unique_words - set([heavy_hitters[k][i] for i in range(0, len(heavy_hitters[k][:top*2]), 2)])
+    return unique_words
 
 if __name__ == "__main__":
     result = "logs_from_29-11_donotcancel.txt"
@@ -42,5 +50,6 @@ if __name__ == "__main__":
             else:
                 line = line.replace(" mapped to", "").replace("\n", "").split(" ")
                 Cats[line[1]] = int(line[0])
-    pieChart(Cats)
-    columnChart(HHs, 'Arts', 10)
+    #pieChart(Cats)
+    #columnChart(HHs, 'Religion', 10)
+    print(uniqueWords(HHs, 'Politics'))

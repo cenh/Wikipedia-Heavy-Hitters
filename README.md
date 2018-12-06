@@ -31,7 +31,7 @@ You should now be able to run main.py
 Make sure maven is installed on the host
 
 
-The java program root folder is wikipedia-graph-neo4j/
+The java program root folder is [this one](./wikipedia-graph-neo4j/).
 
 Open the terminal in this folder and run the following command
     

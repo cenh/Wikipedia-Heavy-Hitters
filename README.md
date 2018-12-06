@@ -21,12 +21,12 @@ A showcase of our results after parsing 8600 articles. The results can be genera
 
 ### Distribution
 Showing the distribution of articles being assigned to the 10 largest macro-categories.
-![alt text](images/Distribution.png "Distribution among the 10 largest categories")
+![alt text](https://github.com/cenh/Wikipedia-Heavy-Hitters/blob/master/images/Distribution.png?raw=true "Distribution among the 10 largest categories")
 
 ### Heavy-hitters
 The 10 largest heavy-hitters for "Sports" and "Technology" respectively:
-![alt text](images/Sports.png "Distribution among the 10 largest categories")
-![alt text](images/Technology.png "Distribution among the 10 largest categories")
+![alt text](https://github.com/cenh/Wikipedia-Heavy-Hitters/blob/master/images/Sports.png?raw=true "10 largest heavy-hitters for Sports")
+![alt text](https://github.com/cenh/Wikipedia-Heavy-Hitters/blob/master/images/Technology.png?raw=true "10 largest heavy-hitters for Technology")
 
 ### Unique heavy-hitters:
 For Sports:

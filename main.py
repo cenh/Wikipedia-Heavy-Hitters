@@ -1,13 +1,18 @@
 from WikiReader import WikiReader
 from Parser import Parser
 from CountMinSketch import CountMinSketch
-import re, time, WordCount, grequests, traceback, argparse
+import re
+import time
+import WordCount
+import grequests
+import traceback
+import argparse
 
 
 def getCategoryMapping(categories, macro_categories):
     try:
         req = grequests.get(
-            'http://localhost:8081/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
+            'http://localhost:8080/mapCategory?startCategories='+"::".join(categories)+'&endCategories='+"::".join(macro_categories))
         response = req.send().response.content
         return response.decode()
     except Exception:
@@ -39,13 +44,20 @@ if __name__ == "__main__":
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from
 
-    parser = argparse.ArgumentParser(description='Main program to get heavy-hitters from Wikipedia.')
-    parser.add_argument('--skip', type=int, help='number of articles to skip from start (Default: 0)', default=0)
-    parser.add_argument('--parse', type=int, help='total number of articles to parse (Default: 10,000)', default=10000)
-    parser.add_argument('--print', type=int, help='number of articles after which every time a log is printed (Default: 100)', default=100)
-    parser.add_argument('--result', type=int, help='number of articles after which every time partial results are printed (Default: 100)', default=100)
-    parser.add_argument('--input', type=str, help='input .xml file (Default: articles/sample.xml)', default="articles/sample.xml")
-    parser.add_argument('--output', type=str, help='output file that contains all the logging (Default: logs.txt)', default="logs.txt")
+    parser = argparse.ArgumentParser(
+        description='Main program to get heavy-hitters from Wikipedia.')
+    parser.add_argument(
+        '--skip', type=int, help='number of articles to skip from start (Default: 0)', default=0)
+    parser.add_argument(
+        '--parse', type=int, help='total number of articles to parse (Default: 10,000)', default=10000)
+    parser.add_argument(
+        '--print', type=int, help='number of articles after which every time a log is printed (Default: 100)', default=100)
+    parser.add_argument(
+        '--result', type=int, help='number of articles after which every time partial results are printed (Default: 100)', default=100)
+    parser.add_argument(
+        '--input', type=str, help='input .xml file (Default: articles/sample.xml)', default="articles/sample.xml")
+    parser.add_argument(
+        '--output', type=str, help='output file that contains all the logging (Default: logs.txt)', default="logs.txt")
     args = parser.parse_args()
 
     wiki_reader = WikiReader(args.input)
@@ -85,7 +97,7 @@ if __name__ == "__main__":
             "]]", "").replace(" ", "_") for category in categories]
 
         macro = getCategoryMapping(categories, macro_categories)
-        if macro in macro_categories :
+        if macro in macro_categories:
             mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])

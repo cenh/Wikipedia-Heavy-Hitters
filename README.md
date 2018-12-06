@@ -43,7 +43,7 @@ Install Neo4j server and make sure it is running the bolt protocol on port 7687.
 
 Download the sql dumps of these wikipedia tables [from the official page](https://dumps.wikimedia.org/enwiki/): category, categorylinks, page.
 
-Change directory into the target directory (./target)
+Change directory into the target directory (./target) and run:
 
     java -jar .\wikipedia-graph-neo4j-0.0.1-SNAPSHOT.jar 
     --spring.profiles.active=create-wiki-graph-db 
@@ -52,7 +52,7 @@ Change directory into the target directory (./target)
     --category-links-dump-file=<path to categorylinks file>
     --base-folder=<the folder where the program outputs files>
 
-Make sure to replace the placeholder <> with the paths of the downloaded files.
+Make sure to replace the placeholder <> with the paths to the downloaded files.
 This process takes several hours.
 
 #### Exposing the HTTP interface used by the Python program
@@ -61,7 +61,7 @@ Simply run
 
     java -jar .\wikipedia-graph-neo4j-0.0.1-SNAPSHOT.jar
 
-By default it will be listening on localhost:8081, exposing some APIs.
+By default it will be listening on localhost:8080, exposing some APIs.
 
 Example of article mapping http request:
 

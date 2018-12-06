@@ -39,11 +39,13 @@ Open the terminal in this folder and run the following command
 
 Install Neo4j server and make sure it is running the bolt protocol on port 7687.
 
-#### Creating the category database
+## Usage
+
+### Creating the category database
 
 Download the sql dumps of these wikipedia tables [from the official page](https://dumps.wikimedia.org/enwiki/): category, categorylinks, page.
 
-Change directory into the target directory (./target) and run:
+Change directory into the target directory (./wikipedia-graph-neo4j/target) and run:
 
     java -jar .\wikipedia-graph-neo4j-0.0.1-SNAPSHOT.jar 
     --spring.profiles.active=create-wiki-graph-db 
@@ -55,7 +57,7 @@ Change directory into the target directory (./target) and run:
 Make sure to replace the placeholder <> with the paths to the downloaded files.
 This process takes several hours.
 
-#### Exposing the HTTP interface used by the Python program
+### Exposing the HTTP interface used by the Python program
 
 Simply run
 
@@ -73,7 +75,8 @@ Example of shortest path http request:
 
     http://localhost:8080/shortestPath?startCategory=Database_management_systems&endCategory=Arts&maxPathLength=10
 
-## Usage
+### Heavy Hitters
+
 When the graph has been created and the Java program is running exposing the HTTP interface, you can then run main.py.
 
 The program supports the following:

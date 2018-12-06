@@ -1,12 +1,7 @@
 from WikiReader import WikiReader
 from Parser import Parser
 from CountMinSketch import CountMinSketch
-import re
-import time
-import WordCount
-import grequests
-from sys import argv
-import traceback
+import re, time, WordCount, grequests, traceback, argparse
 
 
 def getCategoryMapping(categories, macro_categories):
@@ -39,25 +34,25 @@ if __name__ == "__main__":
     macro_categories = ["Arts", "Concepts", "Culture", "Education", "Events", "Geography", "Health", "History", "Humanities",
                         "Language", "Law", "Life", "Mathematics", "Nature", "People", "Philosophy", "Politics", "Reference",
                         "Religion", "Science", "Society", "Sports", "Technology", "Universe", "World"]
-    #dataset_file = "articles/Wikipedia-20181103100040.xml"
-    dataset_file = "/var/articles.xml"
+
     tmp_file = "articles/tmp.txt"  # Temporary file used to write to
     output_file = "articles/mr_output.txt"  # The output file from MRJob
     article_list = "articles/articles-list.txt"  # File that MRJob reads from
-    #
-    if(len(argv) < 5):
-        print("Error: 4 arguments required")
-        print("Argument 0: number of articles to skip from start")
-        print("Argument 1: total number of articles to parse")
-        print("Argument 2: number of articles after which every time a log is printed")
-        print("Argument 3: number of articles after which every time partial results are printed")
-        exit()
-    #
-    wiki_reader = WikiReader(dataset_file)
+
+    parser = argparse.ArgumentParser(description='Main program to get heavy-hitters from Wikipedia.')
+    parser.add_argument('--skip', type=int, help='number of articles to skip from start (Default: 0)', default=0)
+    parser.add_argument('--parse', type=int, help='total number of articles to parse (Default: 10,000)', default=10000)
+    parser.add_argument('--print', type=int, help='number of articles after which every time a log is printed (Default: 100)', default=100)
+    parser.add_argument('--result', type=int, help='number of articles after which every time partial results are printed (Default: 100)', default=100)
+    parser.add_argument('--input', type=str, help='input .xml file (Default: articles/sample.xml)', default="articles/sample.xml")
+    parser.add_argument('--output', type=str, help='output file that contains all the logging (Default: logs.txt)', default="logs.txt")
+    args = parser.parse_args()
+
+    wiki_reader = WikiReader(args.input)
     macroCMS = {}
     mapping_distribution = {}
-    log_file = open("logs.txt", 'w', encoding='utf-8')
-    #
+    log_file = open(args.output, 'w', encoding='utf-8')
+
     for cat in macro_categories:
         macroCMS[cat] = CountMinSketch(
             fraction=0.0005, tolerance=0.0001, allowed_failure_probability=0.01)
@@ -68,15 +63,15 @@ if __name__ == "__main__":
     mrJob = WordCount.WikiWordCount(args=[article_list])
     for page_dict in wiki_reader:
         with open(tmp_file, 'w', encoding='utf-8') as f:
-            if(page_dict['revision']['text'].startswith('#REDIRECT')):
+            if page_dict['revision']['text'].startswith('#REDIRECT'):
                 continue
             f.write(page_dict['revision']['text'])
 
         cnt += 1
-        if(cnt < int(argv[1])):
+        if cnt < int(args.skip):
             continue
 
-        if(cnt > int(argv[2])):
+        if cnt > int(args.parse):
             break
 
         open(output_file, 'w').close()
@@ -84,18 +79,19 @@ if __name__ == "__main__":
 
         categories = re.findall(
             '\[\[Category:.*\]\]', page_dict['revision']['text'])
+
         # Get all the macro-category matches from the articles categories
         categories = [category.replace("[[Category:", "").replace(
             "]]", "").replace(" ", "_") for category in categories]
-        # The assigned macro-category. NOTE: No handling of ties!
+
         macro = getCategoryMapping(categories, macro_categories)
-        if(macro in macro_categories):
+        if macro in macro_categories :
             mapping_distribution[macro] += 1
             for word in Parser.getWordsArticle(output_file):
                 macroCMS[macro].increment(word[0], word[1])
-        if(cnt % int(argv[3]) == 0):
+        if cnt % args.print == 0:
             log(log_file, "Parsed {} articles so far...".format(cnt))
-        if(cnt % int(argv[4]) == 0):
+        if cnt % args.result == 0:
             log_stats(log_file, macro_categories, cnt, macroCMS, time)
 
     log_stats(log_file, macro_categories, cnt, macroCMS, time)

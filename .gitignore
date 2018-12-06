@@ -112,3 +112,9 @@ venv.bak/
 \.idea/Wikipedia-Confidence-Indicator\.iml
 
 \.idea/workspace\.xml
+
+\.idea/Wikipedia-Heavy-Hitters\.iml
+
+articles/mr_output\.txt
+
+articles/tmp\.txt

@@ -45,13 +45,3 @@ class CountMinSketch:
         for k, v in self.heavyHitters.copy().items():
             if not (v / self.word_cnt) > self.fraction:
                 del self.heavyHitters[k]
-
-if __name__ == "__main__":
-    CMS = CountMinSketch(0.05, 0.01, 0.001, 5)
-    list = ["Cat", "Cat", "Cat", "Mouse", "Mouse", "Cat", "Cat", "Horse", "Chicken", "Dog", "Duck", "Spider", "Eagle",
-            "Bird", "Fish", "Salmon", "Horse", "Dog", "Scorpion", "Lion", "Tiger", "Giraffe", "Monkey", "Bear", "Cow",
-            "Bull", "Bizon", "Snake", "Horse", "Horse", "Dog", "Lion", "Lion", "Lion", "Cow", "Monkey", "Bear", "Eagle",
-            "Bird", "Fish", "Salmon", "Scorpion", "Duck", "Spider", "Tiger", "Chicken"]
-    for item in list:
-        CMS.increment(item)
-    print(CMS.getHeavyHitters())

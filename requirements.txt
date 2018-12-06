@@ -3,3 +3,4 @@ grequests
 matplotlib
 MRJob
 nltk
+mmh3

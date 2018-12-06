@@ -2,7 +2,7 @@ from mrjob.job import MRJob
 from mrjob.step import MRStep
 # NOTE: You have to do nltk.download('stopwords') for it to work!
 from nltk.corpus import stopwords
-import re
+import re, os
 
 stopWords = set(stopwords.words('english'))
 additional_stopWords = {'title', 'name', 'ref', 'http', 'url', 'web', 'cite', 'com', 'publisher', 'www', 'date',
@@ -18,13 +18,11 @@ stopWords = stopWords.union(additional_stopWords)
 
 # Read file containing paths to XML files to read
 
-
 class PageWordCountProtocol(object):
-    #BASE_FOLDER = "C:\\Users\\Alex\\Code\\Wikipedia-Confidence-Indicator\\articles\\"
-    BASE_FOLDER = "/var/Wikipedia-Confidence-Indicator/articles/"
+    BASE_FOLDER = os.getcwd()
 
     def read(self, filename):
-        path = PageWordCountProtocol.BASE_FOLDER + filename.decode()
+        path = os.path.join(PageWordCountProtocol.BASE_FOLDER, "articles", filename.decode())
 
         result = []
         with open(path, 'r', encoding='utf-8') as f:
@@ -64,7 +62,6 @@ class WikiWordCount(MRJob):
             MRStep(mapper=self.word_map,
                    reducer=self.word_reduce)
         ]
-
 
 if __name__ == "__main__":
     WikiWordCount.run()

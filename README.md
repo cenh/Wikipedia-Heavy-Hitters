@@ -26,8 +26,57 @@ Open a python shell and type:
     
 You should now be able to run main.py
 
+### Java
+
+Make sure maven is installed on the host
+
+
+The java program root folder is wikipedia-graph-neo4j/
+
+Open the terminal in this folder and run the following command
+    
+    mvn package
+
+Install Neo4j server and make sure it is running the bolt protocol on port 7687.
+
+#### Creating the category database
+
+Download the sql dumps of these wikipedia tables [from the official page](https://dumps.wikimedia.org/enwiki/): category, categorylinks, page.
+
+Change directory into the target directory (./target)
+
+    java -jar .\wikipedia-graph-neo4j-0.0.1-SNAPSHOT.jar 
+    --spring.profiles.active=create-wiki-graph-db 
+    --category-dump-file=<path to category file> 
+    --page-dump-file=<path to page file>
+    --category-links-dump-file=<path to categorylinks file>
+    --base-folder=<the folder where the program outputs files>
+
+Make sure to replace the placeholder <> with the paths of the downloaded files.
+This process takes several hours.
+
+#### Exposing the HTTP interface used by the Python program
+
+Simply run
+
+    java -jar .\wikipedia-graph-neo4j-0.0.1-SNAPSHOT.jar
+
+By default it will be listening on localhost:8081, exposing some APIs.
+
+Example of article mapping http request:
+
+    http://localhost:8080/mapCategory?startCategories=Database_management_systems::Databases&endCategories=Arts::Geography::Technology::Science::People::World
+
+The query params start-category represents the categories the articles has, the end-categories represent the macro-category. One of the macro-category will be returned as result of the mapping. More on this algorithm of mapping can be read in the [final paper](./CTDS___Heavy_Hitters_Words.pdf).
+
+Example of shortest path http request:
+
+    http://localhost:8080/shortestPath?startCategory=Database_management_systems&endCategory=Arts&maxPathLength=10
+
 ## Usage
-When the graphDB is running you can then run main.py, the program supports the following:
+When the graph has been created and the Java program is running exposing the HTTP interface, you can then run main.py.
+
+The program supports the following:
 
 ```
 usage: main.py [-h] [--skip SKIP] [--parse PARSE] [--print PRINT]

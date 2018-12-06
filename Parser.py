@@ -1,21 +1,7 @@
 from bs4 import BeautifulSoup
 from collections import defaultdict, Counter
 
-
 class Parser:
-    @staticmethod
-    def getShortestPaths(file):
-        dict = {}
-        with open(file, encoding='utf-8') as f:
-            for line in f:
-                ls = line.replace("\n", "").split("=>")
-                start_node = ls[0].replace(" ", "")
-                ls = ls[1].split(":")
-                end_node = ls[0].replace(" ", "")
-                distance = int(ls[1].replace(" ", ""))
-                dict[start_node] = (end_node, distance)
-        return dict
-
     @staticmethod
     def getWordsArticle(file):
         words = []
@@ -61,14 +47,3 @@ class Parser:
             if k in max_cats:
                 distance_dict[k] += v
         return Counter(distance_dict).most_common()[-1][0]
-
-
-if __name__ == "__main__":
-    input_file = "ShortestPaths.txt"
-    shortest_path = Parser.readShortestPaths(input_file)
-    print(shortest_path)
-    """
-    refs = Parser.getRefs(pages[0])
-    for ref in refs:
-        print(ref)
-    """

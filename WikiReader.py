@@ -1,6 +1,5 @@
 from xml.etree import ElementTree
 
-
 class WikiReader:
 
     @staticmethod

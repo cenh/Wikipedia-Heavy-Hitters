@@ -10,9 +10,10 @@ additional_stopWords = {'title', 'name', 'ref', 'http', 'url', 'web', 'cite', 'c
                         'issue', 'doi', 'archive', 'name', 'also', 'category', 'file', 'first1', 'htm', 'isbn',
                         'jpg', 'many', 'pdf', 'png', 'abbr', 'usually', 'nbsp', 'html', 'first2', 'last2', 'author',
                         'archiveurl', 'first3', 'last3', 'id', 'including', 'pg', 'archivedate', 'article', 'size',
-                        'volume', 'one', 'new', 'center', 'align', 'style', 'text', 'used', 'book', 'books', 'page', 'pmid', 'may',
-                        'thumb', 'px', 'news', 'location', 'convert', 'th', 'university', 'website', 'google', 'df',
-                        'uk', 'de', 'sfn', 'gov', 'vauthors', 'pmc', 'djdbns', 'mdash', 'en', 'al', 'br', 'deadurl', 'access', 'yes', 'edu'}
+                        'volume', 'one', 'new', 'center', 'align', 'style', 'text', 'used', 'book', 'books', 'page',
+                        'pmid', 'may', 'thumb', 'px', 'news', 'location', 'convert', 'th', 'university', 'website',
+                        'google', 'df', 'uk', 'de', 'sfn', 'gov', 'vauthors', 'pmc', 'djdbns', 'mdash', 'en', 'al',
+                        'br', 'deadurl', 'access', 'yes', 'edu', 'two', 'work', 'use'}
 stopWords = stopWords.union(additional_stopWords)
 
 # Read file containing paths to XML files to read

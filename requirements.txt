@@ -1,1 +1,5 @@
-beautifulsoup4=4.6.3
+beautifulsoup4
+grequests
+matplotlib
+MRJob
+nltk

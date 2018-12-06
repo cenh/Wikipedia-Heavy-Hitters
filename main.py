@@ -6,7 +6,6 @@ import time
 import WordCount
 import grequests
 from sys import argv
-import sys
 import traceback
 
 

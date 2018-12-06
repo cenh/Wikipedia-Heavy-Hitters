@@ -33,39 +33,7 @@ public class ShortestPathCalculator {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-//	@Autowired
-//	private CategoryRepositoryEmbedded categoryRepositoryEmbedded;
-
-//	public CategoryPath getClosestNode(String startingNode, List<String> endNodes) {
-//		List<Pair<String, String>> pairs = new ArrayList<>();
-//		for (String endNode : endNodes) {
-//			if (startingNode.equals(endNode)) {
-//				CategoryPath categoryPath = new CategoryPath();
-//				categoryPath.setEndCategory(endNode);
-//				categoryPath.setStartCategory(startingNode);
-//				categoryPath.setLength((long) 0);
-//				return categoryPath;
-//			}
-//			pairs.add(Pair.of(startingNode, endNode));
-//		}
-	// Long pairDistance = getShortestPathLength(pairs);
-//		if (pairDistance != null && (pairDistance.getLength() != null) && //
-//				(closestPair == null || (closestPair.getLength() == null)
-//						|| (pairDistance.getLength() < closestPair.getLength()))) {
-//			closestPair = pairDistance;
-//		}
-//
-//		return getShortestPathInBatch(pairs);
-//	}
-
 	public CategoryPath getClosestNode(String startingNode, List<String> endNodes) {
-		// Long pairDistance = getShortestPathLength(pairs);
-//		if (pairDistance != null && (pairDistance.getLength() != null) && //
-//				(closestPair == null || (closestPair.getLength() == null)
-//						|| (pairDistance.getLength() < closestPair.getLength()))) {
-//			closestPair = pairDistance;
-//		}
-
 		if (endNodes.contains(startingNode)) {
 			CategoryPath categoryPath = new CategoryPath();
 			categoryPath.setEndCategory(startingNode);
@@ -92,13 +60,7 @@ public class ShortestPathCalculator {
 			}
 			path.setStartCategory(startingCategoryNode);
 			path.setEndCategory(endCategoryNode);
-			//
-			// Long shortestPath = getShortestPathLength(startingCategoryNode,
-			// endCategoryNode);
-			// Long shortestPath =
-			// getCategoryRepository().getShortestPathLength(startingCategoryNode,
-			// endCategoryNode);
-			// path.setLength(shortestPath);
+
 			return path;
 		} catch (
 
@@ -230,36 +192,6 @@ public class ShortestPathCalculator {
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-
-	// public CategoryPath getShortestPathEmbedded(String startingCategoryNode,
-	// String endCategoryNode) {
-//		CategoryPath path = new CategoryPath();
-//
-//		if (startingCategoryNode == null || endCategoryNode == null) {
-//			return null;
-//		}
-//		try {
-//			path.setStartCategory(new Category(startingCategoryNode));
-//			path.setEndCategory(new Category(endCategoryNode));
-//			//
-//			List<Category> shortestPath = getCategoryRepositoryEmbedded().getShortestPath(startingCategoryNode,
-//					endCategoryNode);
-//			path.setNodes(shortestPath);
-//			return path;
-//		} catch (
-//
-//		Exception e) {
-//			e.printStackTrace();
-//			System.err.println(
-//					String.format("Something went wrong calculating distances. starting node |%s| and end node |%s|",
-//							startingCategoryNode, endCategoryNode));
-//			return null;
-//		}
-	// }
-
-//	public CategoryRepositoryEmbedded getCategoryRepositoryEmbedded() {
-//		return categoryRepositoryEmbedded;
-//	}
 
 	public CategoryRepository getCategoryRepository() {
 		return categoryRepository;

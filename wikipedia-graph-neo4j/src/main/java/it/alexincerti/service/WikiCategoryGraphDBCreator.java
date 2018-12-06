@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,35 +17,77 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.driver.internal.InternalNode;
-import org.neo4j.driver.v1.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import it.alexincerti.FileParser;
-import it.alexincerti.Utilties;
 import it.alexincerti.models.Category;
 import it.alexincerti.models.SubcategoryOfRelationship;
 import it.alexincerti.repository.CategoryRepository;
 
 @Service
+@Profile("create-wiki-graph-db")
 public class WikiCategoryGraphDBCreator {
 	Logger logger = LoggerFactory.getLogger(WikiCategoryGraphDBCreator.class);
 
 	@Autowired
 	private CategoryRepository categoryRepository;
+	private String baseFolder;
+	private String categoryFile;
+	private String categoryLinksFile;
+	private String pageFile;
 
-	public void create() {
+	public WikiCategoryGraphDBCreator(@Value("${category-dump-file}") String categoryFile, //
+			@Value("${page-dump-file}") String pageFile, @Value("${category-links-dump-file}") String categoryLinksFile,
+			@Value("${base-folder}") String baseFolder) {
+		this.categoryFile = categoryFile;
+		this.pageFile = pageFile;
+		this.categoryLinksFile = categoryLinksFile;
+		this.baseFolder = baseFolder;
+	}
+
+	public String getBaseFolder() {
+		return baseFolder;
+	}
+
+	public String getCategoryFile() {
+		return categoryFile;
+	}
+
+	public String getCategoryLinksFile() {
+		return categoryLinksFile;
+	}
+
+	public String getPageFile() {
+		return pageFile;
+	}
+
+	@PostConstruct
+	private void init() {
+		logger.info(String.format("Starting creating graph db..."));
+		logger.info(String.format("Category SQL dump file: |%s|", getCategoryFile()));
+		logger.info(String.format("Page SQL dump file: |%s|", getPageFile()));
+		logger.info(String.format("Categorylinks SQL dump file: |%s|", getCategoryLinksFile()));
+		create(getCategoryFile(), getPageFile(), getCategoryLinksFile());
+	}
+
+	// "C:\\Users\\Alex\\Documents\\category.sql"
+	// "C:\\Users\\Alex\\Documents\\page.sql"
+	// "C:\\Users\\Alex\\Documents\\categorylinks.sql"
+	public void create(String categoryFile, String pageFile, String categoryLinksFile) {
 		try {
-//			createCategoryNodes("C:\\Users\\Alex\\Documents\\category.sql");
-//			createIDCategoryNameFromPageLink("C:\\Users\\Alex\\Documents\\page.sql", "pageIdCategoryFile.txt");
+			createCategoryNodes(categoryFile);
+			createIDCategoryNameFromPageLink(pageFile, "pageIdCategoryFile.txt");
 			ConcurrentHashMap<Long, String> pageDictionary = buildPageDictionary("pageIdCategoryFile.txt");
-			createRelationships("C:\\Users\\Alex\\Documents\\categorylinks.sql", "pageid_categoryname.txt",
-					pageDictionary);
+			createRelationships(categoryLinksFile, pageDictionary);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,7 +98,7 @@ public class WikiCategoryGraphDBCreator {
 	}
 
 	public void createCategoryNodes(String categoryFile) throws FileNotFoundException, IOException {
-		logger.debug("Loading the categories and their IDs...");
+		logger.info("Loading the category file. Starting creating nodes...");
 		long lastTime = System.currentTimeMillis();
 		final AtomicInteger done = new AtomicInteger(0);
 		StopWatch watch = new StopWatch();
@@ -76,12 +119,12 @@ public class WikiCategoryGraphDBCreator {
 							category.setName(categoryName);
 							categoriesToSave.add(category);
 //
-							if (done.incrementAndGet() % 10000 == 0) {
+							if (done.incrementAndGet() % 30000 == 0) {
 								getCategoryRepository().save(categoriesToSave, 0);
 								categoriesToSave.clear();
 								watch.stop();
-								logger.debug(
-										" - loaded " + done.get() + " categories" + ". It took: " + watch.getTime());
+								logger.info("Created " + done.get() + " category nodes" + ". It took: "
+										+ watch.getTime() + " ms");
 								watch.reset();
 								watch.start();
 							}
@@ -89,20 +132,26 @@ public class WikiCategoryGraphDBCreator {
 			});
 		}
 		getCategoryRepository().save(categoriesToSave, 0);
-		logger.debug("Loaded " + done.get() + " categories in " + (System.currentTimeMillis() - lastTime) / 1000
+		logger.info("Finished creating category nodes...");
+		logger.info("Loaded " + done.get() + " categories in " + (System.currentTimeMillis() - lastTime) / 1000
 				+ " seconds");
+	}
+
+	private String getPath(String file) {
+		return Paths.get(baseFolder, file).toString();
 	}
 
 	public void createIDCategoryNameFromPageLink(String pageLinkFile, String outputFile)
 			throws FileNotFoundException, IOException {
+		logger.info("Loading the page file. Starting creating <pageID, category_title> pairs...");
 		List<Pair<String, Integer>> categoriesToCheck = new ArrayList<>();
 		// read the file line by line
 
 		final AtomicInteger analyzedPages = new AtomicInteger(0);
 		final AtomicInteger foundCategories = new AtomicInteger(0);
 		final AtomicInteger notFoundCategories = new AtomicInteger(0);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, false))) {
-			try (BufferedWriter errorWriter = new BufferedWriter(new FileWriter("notfound" + outputFile))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(getPath(outputFile), false))) {
+			try (BufferedWriter errorWriter = new BufferedWriter(new FileWriter(getPath("notfound" + outputFile)))) {
 				try (BufferedReader br = new BufferedReader(new FileReader(pageLinkFile))) {
 					br.lines().forEach(line -> {
 						if (!line.startsWith("INSERT INTO ") || line.length() < 2)
@@ -114,8 +163,8 @@ public class WikiCategoryGraphDBCreator {
 							name = FileParser.getPageName(page);
 							try {
 								analyzedPages.incrementAndGet();
-								if (analyzedPages.incrementAndGet() % 100000 == 0) {
-									logger.debug(" - analyzed " + analyzedPages.get() + " pages so far");
+								if (analyzedPages.incrementAndGet() % 300000 == 0) {
+									logger.info("Analyzed " + analyzedPages.get() + " pages so far");
 								}
 								if (name == null) {
 									continue;
@@ -142,17 +191,20 @@ public class WikiCategoryGraphDBCreator {
 								continue;
 							}
 							if (analyzedPages.incrementAndGet() % 100000 == 0)
-								System.out.println(" - parsed " + analyzedPages.get() + " pages so far");
+								logger.info("Parsed " + analyzedPages.get() + " pages so far");
 						}
 					});
+					checkTheBatchOfCategories(categoriesToCheck, writer, errorWriter, notFoundCategories,
+							foundCategories);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				errorWriter.flush();
 			}
-			logger.debug(" - not found " + notFoundCategories.get() + " categories");
-			logger.debug(" - found " + foundCategories.get() + " categories");
+			logger.info("Was not able to find " + notFoundCategories.get()
+					+ " categories, which were labeld as categories in the page file");
+			logger.info("Found " + foundCategories.get() + " categories");
 			writer.flush();
 		}
 	}
@@ -177,7 +229,7 @@ public class WikiCategoryGraphDBCreator {
 			}
 
 			if (foundCategories.incrementAndGet() % 100 == 0) {
-				logger.debug(" - found " + foundCategories.getAndIncrement() + " categories in page file so far");
+				logger.debug("Found " + foundCategories.getAndIncrement() + " categories in page file so far");
 			}
 			try {
 				writer.write(c.getRight() + ": " + c.getLeft());
@@ -220,13 +272,13 @@ public class WikiCategoryGraphDBCreator {
 		relationshipsToCreate.clear();
 	}
 
-	public void createRelationships(String categoryLinksFile, String pageidCategoryNameFile,
-			ConcurrentHashMap<Long, String> pageDictionary) throws FileNotFoundException, IOException {
+	public void createRelationships(String categoryLinksFile, ConcurrentHashMap<Long, String> pageDictionary)
+			throws FileNotFoundException, IOException {
 		final AtomicInteger doneCats = new AtomicInteger(0);
 		List<Pair<String, String>> relationshipsToCreate = new ArrayList<>();
 		long lastTime = System.currentTimeMillis();
 
-		System.out.println("Loading the subcategory edges");
+		logger.info("Loading the categorylinks file. Creating relationships between categories...");
 		try (BufferedReader br = new BufferedReader(new FileReader(categoryLinksFile))) {
 			br.lines().forEach(line -> {
 				// pick the lines containing inserts, not comments or DDL
@@ -257,7 +309,7 @@ public class WikiCategoryGraphDBCreator {
 								}
 
 								if (doneCats.incrementAndGet() % 10000 == 0) {
-									logger.debug(" - parsed " + doneCats.get() + " relationships so far");
+									logger.info("Parsed " + doneCats.get() + " relationships so far");
 									return;
 								}
 							}
@@ -268,7 +320,6 @@ public class WikiCategoryGraphDBCreator {
 				+ " seconds");
 	}
 
-	@SuppressWarnings("unused")
 	public static ConcurrentHashMap<Long, String> buildPageDictionary(String file) throws IOException {
 		ConcurrentHashMap<Long, String> dictionary = new ConcurrentHashMap<Long, String>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -301,24 +352,5 @@ public class WikiCategoryGraphDBCreator {
 
 	public CategoryRepository getCategoryRepository() {
 		return categoryRepository;
-	}
-
-	public void dummy() {
-//		Category allThat = getCategoryRepository().findByName("All_That");
-//		Category arts = getCategoryRepository().findByName("Arts");
-//		Category albumCovers = getCategoryRepository().findByName("Album_covers");
-//
-//		SubcategoryOfRelationship subcategoryOfRelationship = new SubcategoryOfRelationship();
-//		subcategoryOfRelationship.setSubCategory(allThat);
-//		subcategoryOfRelationship.setUpperCategory(albumCovers);
-//		allThat.getSubcategoriesOf().add(subcategoryOfRelationship);
-//
-//		getCategoryRepository().save(allThat);
-
-		Iterable<Map<String, Object>> shortestPath = getCategoryRepository().getShortestPath("Album_covers", "Arts");
-		Iterable<Node> categories = Utilties.extractPath(shortestPath);
-		categories.iterator().forEachRemaining(c -> {
-			logger.debug(((InternalNode) c).get("name").toString());
-		});
 	}
 }

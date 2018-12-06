@@ -50,8 +50,7 @@ public class CategoryMappingController {
 				Collectors.collectingAndThen(Collectors.reducing(
 						(CategoryPath d1, CategoryPath d2) -> d1.getPath().size() > d2.getPath().size() ? d1 : d2),
 						Optional::get)));
-//		String macroCategory = categoryCountMap.keySet().stream()
-//				.min((k1, k2) -> categoryCountMap.get(k1).compareTo(categoryCountMap.get(k2))).orElse(null);
+
 		return categoryCountMap;
 	}
 

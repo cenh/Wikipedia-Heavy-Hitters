@@ -73,4 +73,4 @@ For Technology:
     {'computer', 'system', 'company', 'apple', 'data'}
 
 ## License
-The package is Open Source Software released under the [MIT](LICENSE.md) license.
+The package is Open Source Software released under the [MIT](LICENSE) license.

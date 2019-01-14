@@ -1,5 +1,5 @@
 # Wikipedia-Heavy-Hitters
-This repository contains the code solving the problem of finding the most common words used in the 25 top-level categories.
+This repository contains the code solving the problem of finding the most common words used in the 25 top-level categories. The detailed description of the project can be read in the [final paper](./CTDS___Heavy_Hitters_Words.pdf).
 
 ## Table of Contents
 - [Introduction](#introduction)
